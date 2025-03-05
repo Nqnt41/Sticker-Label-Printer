@@ -1,0 +1,19 @@
+@media print {
+    @page {
+        size: letter;
+        margin: 0.5in 0.15in;
+        padding: 0;
+    }
+
+    .printerPageSize {
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    .labelGrid {
+        display: grid;
+        grid-template-columns: repeat(3, auto);
+        grid-template-rows: repeat(5, auto);
+    }
+}

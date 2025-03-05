@@ -1,0 +1,119 @@
+.inputContainer {
+    display: flex;
+    min-width: 300px;
+    max-width: 935px;
+    margin: 0 0 0.7rem 1rem;
+    gap: 10px;
+}
+
+
+.layoutContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+}
+
+.labelContainer {
+    border: solid black 1px;
+    border-radius: 10px;
+    color: black;
+    width: 2.6in;
+    height: 2in;
+    resize: none;
+    box-sizing: border-box;
+    white-space: pre-line;
+    position: relative;
+    background-color: white;
+    margin-left: 15px;
+    text-align: center;
+}
+
+.borderless {
+    border-color: white;
+}
+
+.nameContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    position: relative;
+    font-size: 1rem;
+    margin: 0.3rem 0 0.2rem;
+    padding: 0;
+    width: 100%;
+}
+
+.dateButton {
+    background-color: lightgray;
+    font-weight: bold;
+    height: 2rem;
+    padding-top: 7px;
+    border-radius: 5px;
+    margin: 0;
+    gap: 0;
+}
+
+.headingAlign {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    margin-bottom: 1rem;
+}
+
+.display {
+    margin: 0;
+}
+
+.address {
+    left: 20%;
+    width: 60%;
+    top: 61%;
+    position: absolute;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.number {
+    left: 20%;
+    width: 60%;
+    top: 87.5%;
+    position: absolute;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.expiration {
+    font-weight: normal;
+    font-size: 0.7rem;
+    top: 82%;
+    left: 72%;
+    position: absolute;
+}
+
+.dateMark {
+    position: absolute;
+    font-size: 0.7rem;
+    top: 2%;
+    right: 0;
+    margin: 0 8px 0 0;
+}
+
+.ingredients {
+    display: block;
+    font-weight: normal;
+    position: relative;
+    font-size: 0.75rem;
+    word-wrap: break-word;
+    margin: 0 0.5rem;
+}
+
+.printButton {
+    font-size: 1rem;
+    font-weight: bold;
+    margin-top: 1.5rem;
+}
