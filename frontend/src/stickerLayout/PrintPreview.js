@@ -3,6 +3,10 @@ import './stickerLayout.css'
 import './printPreview.css';
 import LabelPreview from './LabelPreview';
 
+import { useReactToPrint } from 'react-to-print';
+import React, { useEffect, useRef } from 'react';
+import { useNavigate } from "react-router-dom";
+
 export function PrintPreview({ label }) {
     if (label == null) {
         label = {
@@ -17,14 +21,28 @@ export function PrintPreview({ label }) {
         };
     }
 
+    const navigate = useNavigate();
+
+    const contentRef = useRef(null);
+
+    const handlePrint = useReactToPrint({
+        documentTitle: 'Sticker Printout',
+        contentRef: contentRef,
+        onAfterPrint: () => navigate("/"),
+    })
+
+    useEffect(() => {
+        handlePrint();
+    }, [handlePrint]);
+
     return (
-        <div className="printerPageSize">
-            <div className="labelGrid">
-                {Array.from({length: 15}).map((_, index) => (
-                    <span style={{ border: 'none' }}>
+        <div>
+            <div ref={contentRef} className="printerPageSize">
+                <div className="labelGrid">
+                    {Array.from({length: 15}).map((_, index) => (
                         <LabelPreview key={index} label={label} border={false}/>
-                    </span>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );

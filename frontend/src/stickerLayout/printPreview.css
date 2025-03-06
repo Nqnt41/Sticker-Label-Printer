@@ -9,11 +9,21 @@
         width: 100%;
         height: 100%;
         box-sizing: border-box;
+        display: block;
     }
 
     .labelGrid {
         display: grid;
-        grid-template-columns: repeat(3, auto);
-        grid-template-rows: repeat(5, auto);
+        grid-template-columns: repeat(3, 2.7in);
+        grid-template-rows: repeat(5, 2in);
     }
+
+    .footer {
+        display: none !important;
+    }
+}
+
+@media screen {
+    color: white;
+    background-color: #3C3C3C;
 }

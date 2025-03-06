@@ -249,9 +249,23 @@ function StickerLayout() {
                 <LabelPreview label={label} border={true}/>
             </div>
             <div>
-                <button className="printButton" onClick={() => addLabel(label)}>Add Sticker Sheet to Storage</button>
-                <button className="printButton" style={{ margin: '0 1rem' }}>Only Print Sticker Sheet</button>
-                <button className="printButton">Add and Print Sticker Sheet</button>
+                <button className="printButton" onClick={async () => {
+                    await addLabel(label)
+                    navigate("/")
+                }}>
+                    Add Sticker Sheet to Storage
+                </button>
+                <button className="printButton" style={{ margin: '0 1rem' }} onClick={() =>
+                    navigate("/print-preview")}
+                >
+                    Only Print Sticker Sheet
+                </button>
+                <button className="printButton" onClick={async () => {
+                    await addLabel(label);
+                    navigate("/print-preview");
+                }}>
+                    Add and Print Sticker Sheet
+                </button>
             </div>
         </div>
     );
