@@ -6,7 +6,7 @@ import {getLabels, removeLabel} from "../ManageLabels";
 import './homePage.css';
 import '../App.css';
 
-function HomePage() {
+function HomePage( {setData, data} ) {
     const navigate = useNavigate();
 
     const [input, setInput] = useState('');
@@ -18,8 +18,6 @@ function HomePage() {
 
     const logo = require(`../images/logo.jpg`);
 
-    const [data, setData] = useState([]);
-
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
@@ -29,7 +27,7 @@ function HomePage() {
         }
 
         fetchData();
-    }, []);
+    }, [setData]);
 
     if (loading) {
         return <div className="App">Loading...</div>;

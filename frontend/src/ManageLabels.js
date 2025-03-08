@@ -1,3 +1,5 @@
+import { isEqual } from "lodash";
+
 export async function getLabels() {
     console.log("GET");
 
@@ -35,7 +37,10 @@ export function addLabel(label, setData) {
         body: JSON.stringify({ name, size, ingredients, mark, options, expiration, additionDate, inclusions })
     })
         .then(response => response.text())
-        .then(data => console.log(data))
+        .then(data => {
+            setData(prevData => [...prevData, data])
+            console.log(data);
+        })
         .catch(error => console.error("Error adding label:", error));
 }
 
@@ -50,9 +55,7 @@ export function removeLabel(label, setData) {
     })
         .then(response => response.text())
         .then(data => {
-            if (setData !== null) {
-                setData(data.filter(entry => entry.name !== label.name || entry.size !== label.size));
-            }
+            setData(prevData => prevData.filter(entry => entry.name !== label.name || entry.size !== label.size));
             console.log(data)
         })
         .catch(error => console.error("Error deleting label:", error));
@@ -66,7 +69,9 @@ export function editLabel(originalLabel, newLabel, setData) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ originalLabel, newLabel })
     })
-        .then(response => response.text())
-        .then(data => console.log(data))
+        .then(response => response.json())
+        .then(newEntry => {
+            setData(prevData => prevData.map(entry => isEqual(entry, originalLabel) ? newEntry : entry));
+        })
         .catch(error => console.error("Error editing label:", error));
 }

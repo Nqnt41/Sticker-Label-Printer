@@ -6,7 +6,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import LabelPreview from "./LabelPreview";
 import { addLabel, editLabel } from "../ManageLabels";
 
-function StickerLayout() {
+function StickerLayout( {setData} ) {
     const location = useLocation();
     const labelToEdit = location.state?.entry ?? null;
     const originalLabel = labelToEdit ? JSON.parse(JSON.stringify(labelToEdit)) : null;
@@ -264,7 +264,7 @@ function StickerLayout() {
             {labelToEdit === null && (
                 <div>
                     <button className="printButton" onClick={async () => {
-                        await addLabel(label);
+                        await addLabel(label, setData);
                         navigate("/");
                     }}>
                         Add Sticker Sheet to Storage
@@ -275,7 +275,7 @@ function StickerLayout() {
                         Only Print Sticker Sheet
                     </button>
                     <button className="printButton" onClick={async () => {
-                        await addLabel(label);
+                        await addLabel(label, setData);
                         navigate("/print-preview", {state: {label}});
                     }}>
                         Add and Print Sticker Sheet
@@ -285,7 +285,7 @@ function StickerLayout() {
             {labelToEdit !== null && (
                 <div>
                     <button className="printButton" onClick={async () => {
-                        await editLabel(originalLabel, label);
+                        await editLabel(originalLabel, label, setData);
                         navigate("/");
                     }}>
                         Save Edited Sticker Sheet
@@ -297,7 +297,7 @@ function StickerLayout() {
                         Only Print Sticker Sheet
                     </button>
                     <button className="printButton" onClick={async () => {
-                        await editLabel(originalLabel, label);
+                        await editLabel(originalLabel, label, setData);
                         navigate("/print-preview", {state: {label}});
                     }}>
                         Save Edit and Print Sticker Sheet
