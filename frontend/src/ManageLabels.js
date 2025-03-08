@@ -13,38 +13,60 @@ export async function getLabels() {
     }
 }
 
-export function addLabel(label) {
+export function addLabel(label, setData) {
     console.log("ADD");
 
     if (!label) {
         return;
     }
 
-    const { name, size, ingredients, mark, expiration, inclusions } = label;
+    const { name, size, ingredients, mark, options, expiration, inclusions } = label;
+
+    console.log("TEST " + size);
 
     const date = new Date();
     const additionDate = date.toLocaleDateString();
 
+    console.log({ name, size, ingredients, mark, options, expiration, additionDate, inclusions });
+
     fetch("http://localhost:4567/add-label", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, size, ingredients, mark, expiration, additionDate, inclusions })
+        body: JSON.stringify({ name, size, ingredients, mark, options, expiration, additionDate, inclusions })
     })
         .then(response => response.text())
         .then(data => console.log(data))
         .catch(error => console.error("Error adding label:", error));
 }
 
-export function removeLabel(label) {
+export function removeLabel(label, setData) {
     console.log("REMOVE");
 
     const name = label.name;
-    const size = label.size;
+    const size = parseInt(label.size);
 
     fetch(`http://localhost:4567/delete-label?name=${encodeURIComponent(name)}&size=${size}`, {
         method: "DELETE",
     })
         .then(response => response.text())
-        .then(data => console.log(data))
+        .then(data => {
+            if (setData !== null) {
+                setData(data.filter(entry => entry.name !== label.name || entry.size !== label.size));
+            }
+            console.log(data)
+        })
         .catch(error => console.error("Error deleting label:", error));
+}
+
+export function editLabel(originalLabel, newLabel, setData) {
+    console.log("EDIT");
+
+    fetch(`http://localhost:4567/edit-label`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ originalLabel, newLabel })
+    })
+        .then(response => response.text())
+        .then(data => console.log(data))
+        .catch(error => console.error("Error editing label:", error));
 }

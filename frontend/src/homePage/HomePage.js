@@ -14,6 +14,7 @@ function HomePage() {
     const [hoverIndex, setHoverIndex] = useState(-1);
     const [editIndex, setEditIndex] = useState(-1);
     const [deleteIndex, setDeleteIndex] = useState(-1);
+    const [loading, setLoading] = useState(true);
 
     const logo = require(`../images/logo.jpg`);
 
@@ -21,12 +22,18 @@ function HomePage() {
 
     useEffect(() => {
         async function fetchData() {
-            const labels = await populateList();
+            setLoading(true);
+            const labels = await getLabels();
             setData(labels);
+            setLoading(false);
         }
 
         fetchData();
     }, []);
+
+    if (loading) {
+        return <div className="App">Loading...</div>;
+    }
 
     return (
         <div className="App">
@@ -62,7 +69,7 @@ function HomePage() {
                                     className={`subButton ${editIndex === index ? 'buttonHover' : ''}`}
                                     onClick={(event) => {
                                         event.stopPropagation()
-                                        navigate(`/sticker-creation`)
+                                        navigate(`/sticker-creation`, {state: {entry}})
                                     }}
                                     onMouseEnter={() => setEditIndex(index)}
                                     onMouseLeave={() => setEditIndex(-1)}
@@ -73,8 +80,7 @@ function HomePage() {
                                     className={`subButton ${deleteIndex === index ? 'buttonHover' : ''}`}
                                     onClick={(event) => {
                                         event.stopPropagation()
-                                        removeLabel(entry)
-                                        data.splice(index, 1);
+                                        removeLabel(entry, setData)
                                     }}
                                     onMouseEnter={() => setDeleteIndex(index)}
                                     onMouseLeave={() => setDeleteIndex(-1)}
@@ -96,15 +102,6 @@ function HomePage() {
                 Create New Label</button>
         </div>
     );
-}
-
-async function populateList() {
-    try {
-        return await getLabels();
-    }
-    catch (error) {
-        console.error("PopulateList - Failed to create array using JSON data.");
-    }
 }
 
 export default HomePage;

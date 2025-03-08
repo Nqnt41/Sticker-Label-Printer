@@ -1,14 +1,13 @@
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.Vector;
-
 public class Label {
     private String name;
     private int size;
     private String ingredients;
     private String mark;
     private String expiration;
+    private boolean[] options;
     private String additionDate;
     private String[] inclusions;
 
@@ -19,6 +18,7 @@ public class Label {
             @JsonProperty("ingredients") String ingredients,
             @JsonProperty("mark") String mark,
             @JsonProperty("expiration") String expiration,
+            @JsonProperty("options") boolean[] options,
             @JsonProperty("additionDate") String additionDate,
             @JsonProperty("inclusions") String[] inclusions) {
         this.name = name;
@@ -26,8 +26,9 @@ public class Label {
         this.ingredients = ingredients;
         this.mark = mark;
         this.expiration = expiration;
+        this.options = options;
         this.additionDate = additionDate;
-        this.inclusions = inclusions;
+        this.inclusions = inclusions; // TODO: inclusions is a holdover, remove it from Label down the line. now options.
     }
 
     // Getters
@@ -49,6 +50,10 @@ public class Label {
 
     public String getExpiration() {
         return expiration;
+    }
+
+    public boolean[] getOptions() {
+        return options;
     }
 
     public String getAdditionDate() {
@@ -78,6 +83,10 @@ public class Label {
 
     public void setExpiration(String expiration) {
         this.expiration = expiration;
+    }
+
+    public void setOptions(boolean[] options) {
+        this.options = options;
     }
 
     public void setAdditionDate(String additionDate) {

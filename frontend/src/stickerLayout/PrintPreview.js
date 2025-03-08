@@ -5,23 +5,17 @@ import LabelPreview from './LabelPreview';
 
 import { useReactToPrint } from 'react-to-print';
 import React, { useEffect, useRef } from 'react';
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 
-export function PrintPreview({ label }) {
-    if (label == null) {
-        label = {
-            name: 'Chicken Parmigiana',
-            amount: 16,
-            ingredients: 'Pork Sausage, Marinara Sauce (plum tomatoes, onions, garlic, parsley, basil), romano cheese (milk, salt, starch, enzymes) parmigiana cheese',
-            dateMark: '',
-            expiration: '12-2-2222',
-            options: [true, true, true],
-            printOption: true,
-            numPages: -1
-        };
-    }
-
+export function PrintPreview() {
     const navigate = useNavigate();
+
+    const location = useLocation();
+    const label = location.state?.label;
+
+    if (label === null) {
+        navigate("/");
+    }
 
     const contentRef = useRef(null);
 

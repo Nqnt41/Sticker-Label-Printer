@@ -11,47 +11,100 @@ public class jsonServer {
         enableCORS();
 
         get("/get-labels", (request, response) -> {
-            response.type("application/json");
-            List<Label> labels = jsonManager.fetchData("labels.json");
+            try {
+                response.type("application/json");
+                List<Label> labels = jsonManager.fetchData("labels.json");
 
-            return new ObjectMapper().writeValueAsString(labels);
+                return new ObjectMapper().writeValueAsString(labels);
+            }
+            catch (Exception e) {
+                response.status(404);
+                return "get-labels: Error occurred, unable to get labels from json.";
+            }
         });
 
         post("/add-label", (request, response) -> {
-            ObjectMapper objectMapper = new ObjectMapper();
-            Label newLabel = objectMapper.readValue(request.body(), Label.class);
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                Label newLabel = objectMapper.readValue(request.body(), Label.class);
 
-            List<Label> labels = jsonManager.fetchData("labels.json");
+                List<Label> labels = jsonManager.fetchData("labels.json");
 
-            labels.add(newLabel);
-            jsonManager.set("labels.json", labels);
+                System.out.println();
 
-            return "Label added successfully!";
+                labels.add(newLabel);
+                jsonManager.set("labels.json", labels);
+
+                return "Label added successfully!";
+            }
+            catch (Exception e) {
+                response.status(404);
+                return "add-label: Error occurred - unable to add label.";
+            }
+        });
+
+        put("/edit-label", (request, response) -> {
+            try {
+                ObjectMapper objectMapper = new ObjectMapper();
+                jsonManager.EditLabelContainer updateRequest = objectMapper.readValue(request.body(), jsonManager.EditLabelContainer.class);
+
+                Label originalLabel = updateRequest.originalLabel;
+                Label newLabel = updateRequest.newLabel;
+
+                List<Label> labels = jsonManager.fetchData("labels.json");
+
+                int replaceIndex;
+                try {
+                    replaceIndex = jsonManager.findEntry(labels, originalLabel.getName(), originalLabel.getSize());
+                }
+                catch (NumberFormatException e) {
+                    response.status(400);
+                    return "edit-label: Failed to find index";
+                }
+
+                if (replaceIndex >= 0 && replaceIndex < labels.size()) {
+                    labels.set(replaceIndex, newLabel);
+                    jsonManager.set("labels.json", labels);
+                } else {
+                    response.status(404);
+                    return "edit-label: Index out of bounds.";
+                }
+
+                return "Label edited successfully";
+            }
+            catch(Exception e) {
+                response.status(404);
+                return "edit-label: Error occurred, unable to edit.";
+            }
         });
 
         delete("/delete-label", (request, response) -> {
-            String name = request.queryParams("name");
-            String sizeString = request.queryParams("size");
-            String indexString = request.queryParams("index");
+            try {
+                String name = request.queryParams("name");
+                String sizeString = request.queryParams("size");
+                String indexString = request.queryParams("index");
 
-            List<Label> labels = jsonManager.fetchData("labels.json");
+                List<Label> labels = jsonManager.fetchData("labels.json");
 
-            int removeIndex;
-            if (indexString != null) {
-                removeIndex = Integer.parseInt(indexString);
-            }
-            else {
-                removeIndex = jsonManager.findEntry(labels, name, Integer.parseInt(sizeString));
-            }
+                int removeIndex;
+                if (indexString != null) {
+                    removeIndex = Integer.parseInt(indexString);
+                } else {
+                    removeIndex = jsonManager.findEntry(labels, name, Integer.parseInt(sizeString));
+                }
 
-            if (removeIndex != -1) {
-                labels.remove(removeIndex);
-                jsonManager.set("labels.json", labels);
-                return "Label removed successfully";
+                if (removeIndex != -1) {
+                    labels.remove(removeIndex);
+                    jsonManager.set("labels.json", labels);
+                    return "Label removed successfully";
+                } else {
+                    response.status(404);
+                    return "Could not find/remove label";
+                }
             }
-            else {
+            catch (Exception e) {
                 response.status(404);
-                return "Could not find/remove label";
+                return "delete-label: Error occurred, unable to delete label.";
             }
         });
     }
@@ -73,7 +126,7 @@ public class jsonServer {
 
         before((request, response) -> {
             response.header("Access-Control-Allow-Origin", "*");
-            response.header("Access-Control-Allow-Methods", "GET, POST, DELETE");
+            response.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
             response.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
         });
     }

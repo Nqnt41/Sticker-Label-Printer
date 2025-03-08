@@ -17,10 +17,6 @@
         grid-template-columns: repeat(3, 2.7in);
         grid-template-rows: repeat(5, 2in);
     }
-
-    .footer {
-        display: none !important;
-    }
 }
 
 @media screen {

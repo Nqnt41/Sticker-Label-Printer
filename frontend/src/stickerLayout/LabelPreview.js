@@ -1,6 +1,6 @@
 import '../App.css';
 
-function LabelPreview({ label, border }) {
+export function LabelPreview({ label, border }) {
     const address = `Joey's Seafood Shack
                             1800 US Highway 1
                             Vero Beach, FL 32960`;
@@ -11,7 +11,7 @@ function LabelPreview({ label, border }) {
             <h2 className='nameContainer'>
                     {label.options[0] ? `Kimmy's ` : ''}
                     {label.name}
-                    {label.amount !== 0 ? ` (${label.amount}\u00A0oz)` : ''}
+                    {label.size !== 0 ? ` (${label.size}\u00A0oz)` : ''}
             </h2>
             <h2 className='ingredients'>{label.ingredients}</h2>
             {label.options[1] && (

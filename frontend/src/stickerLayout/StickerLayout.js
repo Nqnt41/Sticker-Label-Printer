@@ -2,23 +2,36 @@ import '../App.css';
 import './stickerLayout.css';
 
 import React, {useEffect, useState} from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import LabelPreview from "./LabelPreview";
-import { addLabel } from "../ManageLabels";
+import { addLabel, editLabel } from "../ManageLabels";
 
 function StickerLayout() {
+    const location = useLocation();
+    const labelToEdit = location.state?.entry ?? null;
+    const originalLabel = labelToEdit ? JSON.parse(JSON.stringify(labelToEdit)) : null;
+
     const [label, setLabel] = useState(() => {
         const storedLabel = JSON.parse(localStorage.getItem('label'));
-        return storedLabel !== null ? storedLabel : {
-            name: '',
-            amount: 0,
-            ingredients: '',
-            dateMark: '',
-            expiration: '',
-            options: [true, true, true],
-            printOption: true,
-            numPages: -1
-        };
+
+        if (labelToEdit !== null) {
+            return labelToEdit;
+        }
+        else if (storedLabel !== null) {
+            return storedLabel;
+        }
+        else {
+            return {
+                name: '',
+                size: 0,
+                ingredients: '',
+                dateMark: '',
+                expiration: '',
+                options: [true, true, true],
+                printOption: true,
+                numPages: -1
+            };
+        }
     });
 
     const handleInputChange = (event) => {
@@ -31,7 +44,7 @@ function StickerLayout() {
                 [name]: trueDate,
             }));
         }
-        else if (name === 'amount' || name === 'numPages') {
+        else if (name === 'size' || name === 'numPages') {
             setLabel((prevLabel) => ({
                 ...prevLabel,
                 [name]: parseInt(value, 10) || 0,
@@ -75,12 +88,12 @@ function StickerLayout() {
         }
     }, [label.printOption, label.numPages]);
 
-    const amounts = [0, 8, 16]; // possible amounts
+    const sizes = [0, 8, 16]; // possible sizes
     const days = ['N/A', 'SU', 'M', 'T', 'W', 'TH', 'F', 'S']; // possible dates
     const values = ['Kimmy\'s', 'Address', 'Phone Number']; // features
 
-    const [amountIndex, setAmountIndex] = useState(0);
-    const [amountHoverIndex, setAmountHoverIndex] = useState(-1)
+    const [sizeIndex, setSizeIndex] = useState(0);
+    const [sizeHoverIndex, setSizeHoverIndex] = useState(-1)
 
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [hoverIndex, setHoverIndex] = useState(-1);
@@ -121,18 +134,18 @@ function StickerLayout() {
                         <h3 style={{ color: 'red' }}>*</h3>
                         <h3>: </h3>
                         <div style={{ display: 'flex', gap: 0 }}>
-                            {amounts.map((amount, index) => (
+                            {sizes.map((size, index) => (
                                 <button
                                     className='dateButton'
-                                    style={{ backgroundColor: amountIndex === index || amountHoverIndex === index ? 'darkgrey' : 'lightgray'}}
+                                    style={{ backgroundColor: sizeIndex === index || sizeHoverIndex === index ? 'darkgrey' : 'lightgray'}}
                                     onClick={() => {
-                                        setLabel((prevLabel) => ({ ...prevLabel, amount }));
-                                        setAmountIndex(index);
+                                        setLabel((prevLabel) => ({ ...prevLabel, size }));
+                                        setSizeIndex(index);
                                     }}
-                                    onMouseEnter={() => setAmountHoverIndex(index)}
-                                    onMouseLeave={() => setAmountHoverIndex(-1)}
+                                    onMouseEnter={() => setSizeHoverIndex(index)}
+                                    onMouseLeave={() => setSizeHoverIndex(-1)}
                                 >
-                                    {amount}
+                                    {size}
                                 </button>
                             ))}
                         </div>
@@ -248,25 +261,49 @@ function StickerLayout() {
 
                 <LabelPreview label={label} border={true}/>
             </div>
-            <div>
-                <button className="printButton" onClick={async () => {
-                    await addLabel(label)
-                    navigate("/")
-                }}>
-                    Add Sticker Sheet to Storage
-                </button>
-                <button className="printButton" style={{ margin: '0 1rem' }} onClick={() =>
-                    navigate("/print-preview")}
-                >
-                    Only Print Sticker Sheet
-                </button>
-                <button className="printButton" onClick={async () => {
-                    await addLabel(label);
-                    navigate("/print-preview");
-                }}>
-                    Add and Print Sticker Sheet
-                </button>
-            </div>
+            {labelToEdit === null && (
+                <div>
+                    <button className="printButton" onClick={async () => {
+                        await addLabel(label);
+                        navigate("/");
+                    }}>
+                        Add Sticker Sheet to Storage
+                    </button>
+                    <button className="printButton" style={{ margin: '0 1rem' }} onClick={() => {
+                        navigate("/print-preview", {state: {label}});
+                    }}>
+                        Only Print Sticker Sheet
+                    </button>
+                    <button className="printButton" onClick={async () => {
+                        await addLabel(label);
+                        navigate("/print-preview", {state: {label}});
+                    }}>
+                        Add and Print Sticker Sheet
+                    </button>
+                </div>
+            )}
+            {labelToEdit !== null && (
+                <div>
+                    <button className="printButton" onClick={async () => {
+                        await editLabel(originalLabel, label);
+                        navigate("/");
+                    }}>
+                        Save Edited Sticker Sheet
+                    </button>
+                    <button className="printButton" style={{ margin: '0 1rem' }} onClick={() => {
+
+                        navigate("/print-preview", {state: {label}});
+                    }}>
+                        Only Print Sticker Sheet
+                    </button>
+                    <button className="printButton" onClick={async () => {
+                        await editLabel(originalLabel, label);
+                        navigate("/print-preview", {state: {label}});
+                    }}>
+                        Save Edit and Print Sticker Sheet
+                    </button>
+                </div>
+            )}
         </div>
     );
 }

@@ -1,33 +1,10 @@
 [ {
-  "name" : "TEST ITEM",
-  "size" : 0,
-  "ingredients" : "iT HAS STUFF IN IT?",
+  "name" : "test asd",
+  "size" : 16,
+  "ingredients" : "aaaa asd",
   "mark" : null,
-  "expiration" : "02-06-2025",
-  "additionDate" : "2/18/2025",
-  "inclusions" : null
-}, {
-  "name" : "test 2",
-  "size" : 0,
-  "ingredients" : "aaaqaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-  "mark" : null,
-  "expiration" : "03-10-2025",
-  "additionDate" : "3/5/2025",
-  "inclusions" : null
-}, {
-  "name" : "teee",
-  "size" : 0,
-  "ingredients" : "twa",
-  "mark" : null,
-  "expiration" : "03-04-2025",
-  "additionDate" : "3/5/2025",
-  "inclusions" : null
-}, {
-  "name" : "",
-  "size" : 0,
-  "ingredients" : "",
-  "mark" : null,
-  "expiration" : "",
-  "additionDate" : "3/5/2025",
+  "expiration" : "03-03-2025",
+  "options" : [ true, true, true ],
+  "additionDate" : "3/8/2025",
   "inclusions" : null
 } ]

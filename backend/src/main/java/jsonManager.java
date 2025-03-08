@@ -40,7 +40,25 @@ public class jsonManager {
             }
         }
         catch (IOException e) {
-            System.out.println("An error occurred creating .json file.");
+            System.out.println("createFile - An error occurred creating .json file.");
+            e.printStackTrace();
+            System.exit(-1);
+        }
+    }
+
+    public static void ensureValidFile(File jsonFile, String fileName) {
+        try {
+            if (!jsonFile.exists()) {
+                createFile(fileName);
+            }
+            if (jsonFile.length() == 0) {
+                FileWriter writer = new FileWriter(jsonFile);
+                writer.write("[]");
+                writer.close();
+            }
+        }
+        catch (Exception e) {
+            System.out.println("ensureValidFile - An error occurred checking the file.");
             e.printStackTrace();
             System.exit(-1);
         }
@@ -50,9 +68,7 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
-            if (!jsonFile.exists()) {
-                createFile(fileName);
-            }
+            ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();
             List<Label> labels = new ArrayList<>();
@@ -69,7 +85,7 @@ public class jsonManager {
             System.out.println("Label added successfully.");
         }
         catch (Exception e) {
-            System.out.println("An error occurred setting .json file data.");
+            System.out.println("add (Java) - An error occurred setting .json file data.");
             e.printStackTrace();
             System.exit(-1);
         }
@@ -79,9 +95,7 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
-            if (!jsonFile.exists()) {
-                createFile(fileName);
-            }
+            ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
@@ -90,7 +104,7 @@ public class jsonManager {
             System.out.println("Label set successfully.");
         }
         catch (Exception e) {
-            System.out.println("An error occurred adding data to .json file.");
+            System.out.println("set (Java) - An error occurred setting data in .json file.");
             e.printStackTrace();
             System.exit(-1);
         }
@@ -100,15 +114,13 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
-            if (!jsonFile.exists()) {
-                createFile(fileName);
-            }
+            ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(jsonFile, new TypeReference<List<Label>>(){});
         }
         catch (Exception e) {
-            System.out.println("FETCHDATA - An error occurred converting data from .json file into object.");
+            System.out.println("FetchData - An error occurred converting data from .json file into object.");
             e.printStackTrace();
             System.exit(-1);
         }
@@ -137,5 +149,10 @@ public class jsonManager {
 
         System.out.println(name + " with size " + size + " oz not found in .json data.");
         return -1;
+    }
+
+    public static class EditLabelContainer {
+        public Label originalLabel;
+        public Label newLabel;
     }
 }
