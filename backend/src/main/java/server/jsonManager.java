@@ -1,19 +1,4 @@
-/*
-        public Label(String name, int size, String ingredients, String mark, String date, String additionDate, Vector<String> inclusions)
-    {
-       "chicken parmigiana": [
-          {
-             "id": "01",
-             "name": "Chicken Parmigiana",
-             "size": "",
-             "ingredients": "pasta, marinara sauce (plum tomatoes, onions, garlic, parsley, basil), romano cheese (milk, salt, starch, enzymes) parmigiana cheese, and ricotta cheese",
-             "mark": "SU",
-             "expiration": "12/29/24",
-             "include": [ "Kimmy's", "Address", "Number" ]
-          },
-       ]
-    }
-*/
+package server;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +67,7 @@ public class jsonManager {
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, labels); // Write the updated list
 
-            System.out.println("Label added successfully.");
+            System.out.println("server.Label added successfully.");
         }
         catch (Exception e) {
             System.out.println("add (Java) - An error occurred setting .json file data.");
@@ -101,7 +86,7 @@ public class jsonManager {
             objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(new File(fileName), data);
 
-            System.out.println("Label set successfully.");
+            System.out.println("server.Label set successfully.");
         }
         catch (Exception e) {
             System.out.println("set (Java) - An error occurred setting data in .json file.");

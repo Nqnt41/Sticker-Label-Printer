@@ -1,7 +1,7 @@
+package server;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.List;
-
 import static spark.Spark.*;
 
 public class jsonServer {
@@ -35,7 +35,7 @@ public class jsonServer {
                 labels.add(newLabel);
                 jsonManager.set("labels.json", labels);
 
-                return "Label added successfully!";
+                return "server.Label added successfully!";
             }
             catch (Exception e) {
                 response.status(404);
@@ -70,7 +70,7 @@ public class jsonServer {
                     return "edit-label: Index out of bounds.";
                 }
 
-                return "Label edited successfully";
+                return "server.Label edited successfully";
             }
             catch(Exception e) {
                 response.status(404);
@@ -96,7 +96,7 @@ public class jsonServer {
                 if (removeIndex != -1) {
                     labels.remove(removeIndex);
                     jsonManager.set("labels.json", labels);
-                    return "Label removed successfully";
+                    return "server.Label removed successfully";
                 } else {
                     response.status(404);
                     return "Could not find/remove label";

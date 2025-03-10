@@ -1,3 +1,5 @@
+package server;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -28,7 +30,7 @@ public class Label {
         this.expiration = expiration;
         this.options = options;
         this.additionDate = additionDate;
-        this.inclusions = inclusions; // TODO: inclusions is a holdover, remove it from Label down the line. now options.
+        this.inclusions = inclusions; // TODO: inclusions is a holdover, remove it from server.Label down the line. now options.
     }
 
     // Getters

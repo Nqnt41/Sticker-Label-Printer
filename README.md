@@ -40,7 +40,7 @@ Java Spark is used to connect these two sides of the program via POST, PUT, DELE
 * After creating a local repository, the following command can be used to pull the program from GitHub for use on a personal system
   ```sh
   git init
-  git remote add https://github.com/Nqnt41/Sticker-Label-Printer.git
+  git remote add https://github.com/Nqnt41/Sticker-server.Label-Printer.git
   git pull origin main
   ```
 
