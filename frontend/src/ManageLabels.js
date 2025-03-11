@@ -75,3 +75,12 @@ export function editLabel(originalLabel, newLabel, setData) {
         })
         .catch(error => console.error("Error editing label:", error));
 }
+
+export async function checkBackendStatus() {
+    try {
+        await fetch('http://localhost:4567', { mode: 'no-cors' });
+        return true;
+    } catch (error) {
+        return false;
+    }
+}

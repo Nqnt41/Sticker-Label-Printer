@@ -4,12 +4,33 @@ import './stickerLayout.css';
 import React, {useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LabelPreview from "./LabelPreview";
-import { addLabel, editLabel } from "../ManageLabels";
+import {addLabel, checkBackendStatus, editLabel} from "../ManageLabels";
 
-function StickerLayout( {setData} ) {
+function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     const location = useLocation();
     const labelToEdit = location.state?.entry ?? null;
     const originalLabel = labelToEdit ? JSON.parse(JSON.stringify(labelToEdit)) : null;
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        async function checkAndSetBackendStatus() {
+            setBackendRunning(await checkBackendStatus());
+        }
+
+        checkAndSetBackendStatus();
+
+        const interval = setInterval(async () => {
+            setBackendRunning(await checkBackendStatus());
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        if (!backendRunning) {
+            navigate("/");
+        }
+    }, [backendRunning, navigate]);
 
     const [label, setLabel] = useState(() => {
         const storedLabel = JSON.parse(localStorage.getItem('label'));
@@ -101,211 +122,235 @@ function StickerLayout( {setData} ) {
     const [plusHover, setPlusHover] = useState(false);
     const [minusHover, setMinusHover] = useState(false);
 
-    const navigate = useNavigate();
     const logo = require(`../images/logo.jpg`);
 
-    return (
-        <div className="App">
-            <img className="logo" onClick={() => navigate('/')} src={logo} alt={''}/>
-            <h1>Edit Sticker Layout</h1>
-            <h2 style={{ marginBottom: 0 }}>Add any information needed for stickers. Use preview to see layout.</h2>
+    if (!backendRunning) {
+        return <div className="App">Loading...</div>;
+    }
+    else {
+        return (
+            <div className="App">
+                <img className="logo" onClick={() => navigate('/')} src={logo} alt={''}/>
+                <h1>Edit Sticker Layout</h1>
+                <h2 style={{marginBottom: 0}}>Add any information needed for stickers. Use preview to see layout.</h2>
 
-            <div className="headingAlign">
-                <h3>(Note that only elements with a red star </h3>
-                <h3 style={{ fontSize: '2rem', fontWeight: 'bold', color: 'red' }}>*</h3>
-                <h3> are required - the rest can be left blank as desired.)</h3>
-            </div>
+                <div className="headingAlign">
+                    <h3>(Note that only elements with a red star </h3>
+                    <h3 style={{fontSize: '2rem', fontWeight: 'bold', color: 'red'}}>*</h3>
+                    <h3> are required - the rest can be left blank as desired.)</h3>
+                </div>
 
-            <div className="layoutContainer">
-                <div className="main">
-                    <div className='inputContainer'>
-                        <h3>Name</h3>
-                        <h3 style={{ color: 'red' }}>*</h3>
-                        <h3>:   Kimmy's </h3>
-                        <input
-                            style={{ fontSize: '1rem' }}
-                            name='name'
-                            onChange={handleInputChange}
-                            value={label.name}
-                            placeholder="Enter name of food item."
-                        />
+                <div className="layoutContainer">
+                    <div className="main">
+                        <div className='inputContainer'>
+                            <h3>Name</h3>
+                            <h3 style={{color: 'red'}}>*</h3>
+                            <h3>: Kimmy's </h3>
+                            <input
+                                style={{fontSize: '1rem'}}
+                                name='name'
+                                onChange={handleInputChange}
+                                value={label.name}
+                                placeholder="Enter name of food item."
+                            />
 
-                        <h3> Amount: </h3>
-                        <h3 style={{ color: 'red' }}>*</h3>
-                        <h3>: </h3>
-                        <div style={{ display: 'flex', gap: 0 }}>
-                            {sizes.map((size, index) => (
-                                <button
-                                    className='dateButton'
-                                    style={{ backgroundColor: sizeIndex === index || sizeHoverIndex === index ? 'darkgrey' : 'lightgray'}}
-                                    onClick={() => {
-                                        setLabel((prevLabel) => ({ ...prevLabel, size }));
-                                        setSizeIndex(index);
-                                    }}
-                                    onMouseEnter={() => setSizeHoverIndex(index)}
-                                    onMouseLeave={() => setSizeHoverIndex(-1)}
-                                >
-                                    {size}
-                                </button>
-                            ))}
-                        </div>
-                        <h3> oz</h3>
-                    </div>
-
-                    <div className='inputContainer'>
-                        <h3>Ingredients:</h3>
-                        <textarea
-                            name='ingredients'
-                            onChange={handleInputChange}
-                            value={label.ingredients}
-                            placeholder="List ingredients as they appear on tag."
-                        />
-                    </div>
-
-                    <div className='inputContainer'>
-                        <h3>Date Mark:</h3>
-                        <div style={{ display: 'flex', gap: 0 }}>
-                            {days.map((day, index) => (
-                                <button
-                                    className='dateButton'
-                                    style={{ backgroundColor: selectedIndex === index || hoverIndex === index ? 'darkgrey' : 'lightgray'}}
-                                    onClick={() => {
-                                        setLabel((prevLabel) => ({ ...prevLabel, dateMark: days[index] }));
-                                        setSelectedIndex(index); // Update selectedIndex for active button styling
-                                    }}
-                                    onMouseEnter={() => setHoverIndex(index)}
-                                    onMouseLeave={() => setHoverIndex(-1)}
-                                >
-                                    {day}
-                                </button>
-                            ))}
+                            <h3> Amount: </h3>
+                            <h3 style={{color: 'red'}}>*</h3>
+                            <h3>: </h3>
+                            <div style={{display: 'flex', gap: 0}}>
+                                {sizes.map((size, index) => (
+                                    <button
+                                        className='dateButton'
+                                        style={{backgroundColor: sizeIndex === index || sizeHoverIndex === index ? 'darkgrey' : 'lightgray'}}
+                                        onClick={() => {
+                                            setLabel((prevLabel) => ({...prevLabel, size}));
+                                            setSizeIndex(index);
+                                        }}
+                                        onMouseEnter={() => setSizeHoverIndex(index)}
+                                        onMouseLeave={() => setSizeHoverIndex(-1)}
+                                    >
+                                        {size}
+                                    </button>
+                                ))}
+                            </div>
+                            <h3> oz</h3>
                         </div>
 
-                        <h3>Expiration:</h3>
-                        <input
-                            type="date"
-                            style={{ fontSize: '1rem', width: '10rem' }}
-                            name='expiration'
-                            onChange={handleInputChange}
-                            value={label.expiration}
-                            placeholder="Enter expiration date"/>
-                    </div>
+                        <div className='inputContainer'>
+                            <h3>Ingredients:</h3>
+                            <textarea
+                                name='ingredients'
+                                onChange={handleInputChange}
+                                value={label.ingredients}
+                                placeholder="List ingredients as they appear on tag."
+                            />
+                        </div>
 
-                    <div className='inputContainer' style={{ display: 'flex', alignItems: 'center' }}>
-                        <h3>Include</h3>
-                        <h3 style={{ color: 'red' }}>*</h3>
-                        <h3>: </h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            {label.options.map((option, index) => (
-                                <label key={index} style={{ display: 'flex', alignItems: 'center', fontSize: '1.15rem', gap: '0.25rem' }}>
+                        <div className='inputContainer'>
+                            <h3>Date Mark:</h3>
+                            <div style={{display: 'flex', gap: 0}}>
+                                {days.map((day, index) => (
+                                    <button
+                                        className='dateButton'
+                                        style={{backgroundColor: selectedIndex === index || hoverIndex === index ? 'darkgrey' : 'lightgray'}}
+                                        onClick={() => {
+                                            setLabel((prevLabel) => ({...prevLabel, dateMark: days[index]}));
+                                            setSelectedIndex(index); // Update selectedIndex for active button styling
+                                        }}
+                                        onMouseEnter={() => setHoverIndex(index)}
+                                        onMouseLeave={() => setHoverIndex(-1)}
+                                    >
+                                        {day}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <h3>Expiration:</h3>
+                            <input
+                                type="date"
+                                style={{fontSize: '1rem', width: '10rem'}}
+                                name='expiration'
+                                onChange={handleInputChange}
+                                value={label.expiration}
+                                placeholder="Enter expiration date"/>
+                        </div>
+
+                        <div className='inputContainer' style={{display: 'flex', alignItems: 'center'}}>
+                            <h3>Include</h3>
+                            <h3 style={{color: 'red'}}>*</h3>
+                            <h3>: </h3>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                                {label.options.map((option, index) => (
+                                    <label key={index} style={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        fontSize: '1.15rem',
+                                        gap: '0.25rem'
+                                    }}>
+                                        <input
+                                            type="checkbox"
+                                            className='checkbox'
+                                            checked={option}
+                                            onChange={() => handleOptionChange(false, index)}
+                                        />
+                                        {values[index]}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className='inputContainer' style={{display: 'flex', alignItems: 'center'}}>
+                            <h3>Store/Print</h3>
+                            <h3 style={{color: 'red'}}>*</h3>
+                            <h3>: </h3>
+                            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+                                <label style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    fontSize: '1.15rem',
+                                    gap: '0.25rem'
+                                }}>
                                     <input
                                         type="checkbox"
                                         className='checkbox'
-                                        checked={option}
-                                        onChange={() => handleOptionChange(false, index)}
+                                        checked={label.printOption}
+                                        onChange={() => handleOptionChange(true, -1)}
                                     />
-                                    {values[index]}
+                                    Show Print Preview Page
                                 </label>
-                            ))}
+                            </div>
                         </div>
+
+                        {!label.printOption && (
+                            <div className='inputContainer'>
+                                <h3>Number of Pages to Print</h3>
+                                <h3 style={{color: 'red'}}>*</h3>
+                                <h3>: </h3>
+                                <button
+                                    className='dateButton'
+                                    style={{backgroundColor: minusHover ? 'darkgrey' : 'lightgray'}}
+                                    onClick={() => {
+                                        setLabel((prevLabel) => ({
+                                            ...prevLabel,
+                                            numPages: prevLabel.numPages > 1 ? prevLabel.numPages - 1 : 1
+                                        }));
+                                    }}
+                                    onMouseEnter={() => setMinusHover(true)}
+                                    onMouseLeave={() => setMinusHover(false)}
+                                >
+                                    -
+                                </button>
+                                <h3 style={{fontSize: '1.4rem'}}> {label.numPages} </h3>
+                                <button
+                                    className='dateButton'
+                                    style={{backgroundColor: plusHover ? 'darkgrey' : 'lightgray'}}
+                                    onClick={() => {
+                                        setLabel((prevLabel) => ({...prevLabel, numPages: prevLabel.numPages + 1}));
+                                    }}
+                                    onMouseEnter={() => setPlusHover(true)}
+                                    onMouseLeave={() => setPlusHover(false)}
+                                >
+                                    +
+                                </button>
+                            </div>
+                        )}
                     </div>
 
-                    <div className='inputContainer' style={{ display: 'flex', alignItems: 'center' }}>
-                        <h3>Store/Print</h3>
-                        <h3 style={{ color: 'red' }}>*</h3>
-                        <h3>: </h3>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', fontSize: '1.15rem', gap: '0.25rem' }}>
-                                <input
-                                    type="checkbox"
-                                    className='checkbox'
-                                    checked={label.printOption}
-                                    onChange={() => handleOptionChange(true, -1)}
-                                />
-                                Show Print Preview Page
-                            </label>
-                        </div>
-                    </div>
-
-                    {!label.printOption && (
-                        <div className='inputContainer'>
-                            <h3>Number of Pages to Print</h3>
-                            <h3 style={{ color: 'red' }}>*</h3>
-                            <h3>: </h3>
-                            <button
-                                className='dateButton'
-                                style={{ backgroundColor: minusHover ? 'darkgrey' : 'lightgray'}}
-                                onClick={() => {
-                                    setLabel((prevLabel) => ({ ...prevLabel, numPages: prevLabel.numPages > 1 ? prevLabel.numPages - 1 : 1 }));
-                                }}
-                                onMouseEnter={() => setMinusHover(true)}
-                                onMouseLeave={() => setMinusHover(false)}
-                            >
-                                -
-                            </button>
-                            <h3 style={{fontSize: '1.4rem'}}> {label.numPages} </h3>
-                            <button
-                                className='dateButton'
-                                style={{ backgroundColor: plusHover ? 'darkgrey' : 'lightgray'}}
-                                onClick={() => {
-                                    setLabel((prevLabel) => ({ ...prevLabel, numPages: prevLabel.numPages + 1 }));
-                                }}
-                                onMouseEnter={() => setPlusHover(true)}
-                                onMouseLeave={() => setPlusHover(false)}
-                            >
-                                +
-                            </button>
-                        </div>
-                    )}
+                    <LabelPreview label={label} border={true}/>
                 </div>
-
-                <LabelPreview label={label} border={true}/>
+                {labelToEdit === null && (
+                    <div>
+                        <button className="printButton" onClick={async () => {
+                            if (checkBackendStatus()) {
+                                await addLabel(label, setData);
+                            }
+                            navigate("/");
+                        }}>
+                            Add Sticker Sheet to Storage
+                        </button>
+                        <button className="printButton" style={{margin: '0 1rem'}} onClick={() => {
+                            navigate("/print-preview", {state: {label}});
+                        }}>
+                            Only Print Sticker Sheet
+                        </button>
+                        <button className="printButton" onClick={async () => {
+                            if (checkBackendStatus()) {
+                                await addLabel(label, setData);
+                            }
+                            navigate("/print-preview", {state: {label}});
+                        }}>
+                            Add and Print Sticker Sheet
+                        </button>
+                    </div>
+                )}
+                {labelToEdit !== null && (
+                    <div>
+                        <button className="printButton" onClick={async () => {
+                            if (checkBackendStatus()) {
+                                await editLabel(originalLabel, label, setData);
+                            }
+                            navigate("/");
+                        }}>
+                            Save Edited Sticker Sheet
+                        </button>
+                        <button className="printButton" style={{margin: '0 1rem'}} onClick={() => {
+                            navigate("/print-preview", {state: {label}});
+                        }}>
+                            Only Print Sticker Sheet
+                        </button>
+                        <button className="printButton" onClick={async () => {
+                            if (checkBackendStatus()) {
+                                await editLabel(originalLabel, label, setData);
+                            }
+                            navigate("/print-preview", {state: {label}});
+                        }}>
+                            Save Edit and Print Sticker Sheet
+                        </button>
+                    </div>
+                )}
             </div>
-            {labelToEdit === null && (
-                <div>
-                    <button className="printButton" onClick={async () => {
-                        await addLabel(label, setData);
-                        navigate("/");
-                    }}>
-                        Add Sticker Sheet to Storage
-                    </button>
-                    <button className="printButton" style={{ margin: '0 1rem' }} onClick={() => {
-                        navigate("/print-preview", {state: {label}});
-                    }}>
-                        Only Print Sticker Sheet
-                    </button>
-                    <button className="printButton" onClick={async () => {
-                        await addLabel(label, setData);
-                        navigate("/print-preview", {state: {label}});
-                    }}>
-                        Add and Print Sticker Sheet
-                    </button>
-                </div>
-            )}
-            {labelToEdit !== null && (
-                <div>
-                    <button className="printButton" onClick={async () => {
-                        await editLabel(originalLabel, label, setData);
-                        navigate("/");
-                    }}>
-                        Save Edited Sticker Sheet
-                    </button>
-                    <button className="printButton" style={{ margin: '0 1rem' }} onClick={() => {
-
-                        navigate("/print-preview", {state: {label}});
-                    }}>
-                        Only Print Sticker Sheet
-                    </button>
-                    <button className="printButton" onClick={async () => {
-                        await editLabel(originalLabel, label, setData);
-                        navigate("/print-preview", {state: {label}});
-                    }}>
-                        Save Edit and Print Sticker Sheet
-                    </button>
-                </div>
-            )}
-        </div>
-    );
+        );
+    }
 }
 
 export default StickerLayout;

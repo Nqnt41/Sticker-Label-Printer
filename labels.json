@@ -1,46 +1,10 @@
 [ {
-  "name" : "poopy",
-  "size" : 16,
-  "ingredients" : "test",
-  "mark" : null,
-  "expiration" : "03-25-2025",
-  "options" : [ true, false, true ],
-  "additionDate" : "3/8/2025",
-  "inclusions" : null
-}, {
-  "name" : "a",
+  "name" : "test",
   "size" : 0,
-  "ingredients" : "a",
+  "ingredients" : "",
   "mark" : null,
   "expiration" : "",
   "options" : [ true, true, true ],
-  "additionDate" : "3/8/2025",
-  "inclusions" : null
-}, {
-  "name" : "d",
-  "size" : 0,
-  "ingredients" : "d",
-  "mark" : null,
-  "expiration" : "",
-  "options" : [ true, true, true ],
-  "additionDate" : "3/8/2025",
-  "inclusions" : null
-}, {
-  "name" : "x",
-  "size" : 0,
-  "ingredients" : "x",
-  "mark" : null,
-  "expiration" : "",
-  "options" : [ true, true, true ],
-  "additionDate" : "3/8/2025",
-  "inclusions" : null
-}, {
-  "name" : "x",
-  "size" : 0,
-  "ingredients" : "x",
-  "mark" : null,
-  "expiration" : "",
-  "options" : [ true, true, true ],
-  "additionDate" : "3/8/2025",
+  "additionDate" : "3/11/2025",
   "inclusions" : null
 } ]

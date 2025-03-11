@@ -10,6 +10,15 @@ public class jsonServer {
 
         enableCORS();
 
+        get("/", (request, response) -> {
+            try {
+                return "Backend is running - try accessing /get-labels for json information.";
+            }
+            catch (Exception e) {
+                return "Error accessing main page.";
+            }
+        });
+
         get("/get-labels", (request, response) -> {
             try {
                 response.type("application/json");
