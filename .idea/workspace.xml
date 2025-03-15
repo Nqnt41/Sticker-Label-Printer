@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="47c0ffd5-b27d-4798-ad18-b2b7ba858c89" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/java/server/jsonServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/server/jsonServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/ManageLabels.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/ManageLabels.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/homePage/HomePage.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/homePage/HomePage.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/stickerLayout/StickerLayout.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/stickerLayout/StickerLayout.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/labels.json" beforeDir="false" afterPath="$PROJECT_DIR$/labels.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -54,7 +51,7 @@
       <command value="mvn deploy" />
     </option>
   </component>
-  <component name="RunManager" selected="Application.app">
+  <component name="RunManager" selected="npm.start">
     <configuration name="app" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="server.jsonServer" />
       <module name="stickerPrinterBackend" />
@@ -191,6 +188,10 @@
       <workItem from="1741586137221" duration="3433000" />
       <workItem from="1741618161693" duration="595000" />
       <workItem from="1741721325420" duration="6757000" />
+      <workItem from="1742012065903" duration="940000" />
+      <workItem from="1742018217178" duration="1636000" />
+      <workItem from="1742067755671" duration="730000" />
+      <workItem from="1742069654089" duration="841000" />
     </task>
     <servers />
   </component>

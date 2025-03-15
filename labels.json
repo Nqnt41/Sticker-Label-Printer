@@ -1,10 +1,10 @@
 [ {
-  "name" : "test",
-  "size" : 0,
-  "ingredients" : "",
+  "name" : "bacon",
+  "size" : 8,
+  "ingredients" : "a",
   "mark" : null,
   "expiration" : "",
   "options" : [ true, true, true ],
-  "additionDate" : "3/11/2025",
+  "additionDate" : "3/15/2025",
   "inclusions" : null
 } ]

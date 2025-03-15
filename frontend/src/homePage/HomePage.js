@@ -40,11 +40,12 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
                 setLoading(true);
                 await checkBackendStatus();
                 const labels = await getLabels();
-                setData(labels);
+                setData(labels || []);
                 setLoading(false);
-            }
-            catch (e) {
-                console.error("fetchData - backend not working or online!");
+            } catch (e) {
+                console.error("fetchData - backend not working or online!", e);
+                setData([]);
+                setLoading(false);
             }
         }
 
@@ -101,7 +102,7 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
                                     onMouseLeave={() => setHoverIndex(-1)}
                                 >
                                     <label style={{cursor: 'pointer', flexGrow: 1}}>
-                                        <span>{entry.name}</span>
+                                        <span>{entry?.name || "Error - Please Refresh Page"}</span>
                                     </label>
                                     <button
                                         ref={inputRef}
