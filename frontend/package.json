@@ -1,9 +1,13 @@
 {
-  "name": "frontend",
+  "name": "joeys-seafood-sticker-printer",
   "version": "0.1.0",
+  "description": "A React.js frontend and Java Spark backend application created to help Joey's Seafood Shack staff create and print their own sticker label data.",
+  "author": "Ryan Coveny - Nqnt41 on GitHub",
   "private": true,
   "dependencies": {
+    "@electron/remote": "^2.1.2",
     "cra-template": "1.2.0",
+    "electron-squirrel-startup": "^1.0.1",
     "lodash": "^4.17.21",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -11,11 +15,18 @@
     "react-scripts": "5.0.1",
     "react-to-print": "^3.0.5"
   },
+  "main": "public/main.js",
+  "homepage": "./",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron:serve": "concurrently -k \"cross-env BROWSER=none npm start\" \"npm run electron:start\"",
+    "electron:build": "npm run build && electron-builder -c.extraMetadata.main=build/main.js",
+    "electron:start": "wait-on tcp:3000 && electron .",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "eslintConfig": {
     "extends": [
@@ -34,5 +45,21 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^7.7.0",
+    "@electron-forge/maker-deb": "^7.7.0",
+    "@electron-forge/maker-rpm": "^7.7.0",
+    "@electron-forge/maker-squirrel": "^7.7.0",
+    "@electron-forge/maker-zip": "^7.7.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.7.0",
+    "@electron-forge/plugin-fuses": "^7.7.0",
+    "@electron/fuses": "^1.8.0",
+    "concurrently": "^9.1.2",
+    "cross-env": "^7.0.3",
+    "electron": "^35.0.1",
+    "electron-is-dev": "^3.0.1",
+    "tree-kill": "^1.2.2",
+    "wait-on": "^8.0.3"
   }
 }

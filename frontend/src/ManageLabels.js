@@ -71,7 +71,7 @@ export function editLabel(originalLabel, newLabel, setData) {
     })
         .then(response => response.json())
         .then(newEntry => {
-            setData(prevData => prevData.map(entry => isEqual(entry, originalLabel) ? newEntry : entry));
+            setData(prevData => prevData.map(entry => (entry.name === originalLabel.name && entry.size === originalLabel.size) ? newEntry : entry));
         })
         .catch(error => console.error("Error editing label:", error));
 }

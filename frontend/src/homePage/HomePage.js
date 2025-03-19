@@ -80,11 +80,9 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
                 <img className="logo" onClick={() => navigate('/')} src={logo} alt={''}/>
                 <h1>Sticker Sheet Printer</h1>
                 <h2 style={{marginBottom: '0.75rem'}}>Search for existing sticker label:</h2>
-                <h3 style={{marginBottom: '0.75rem', fontWeight: 'normal'}}>Select entry (e.g. Chicken Parmigiana) to
-                    print.</h3>
-                <div>
+                <h3 style={{marginBottom: '0.75rem', fontWeight: 'normal'}}>Select entry (e.g. Chicken Parmigiana) to print.</h3>
+                <div ref={inputRef}>
                     <input
-                        ref={inputRef}
                         style={{fontSize: '1rem'}}
                         placeholder="Enter name of food item"
                         onClick={() => setSearchSelected(true)}
@@ -92,46 +90,49 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
                     />
                     {searchSelected && Array.isArray(data) && data.length > 0 && (
                         <div className="optionsContainer">
-                            {data.filter(entry => entry.name.toLowerCase().startsWith(input.toLowerCase())).map((entry, index) => (
-                                <div
-                                    key={index}
-                                    ref={inputRef}
-                                    className={`option ${hoverIndex === index && editIndex === -1 && deleteIndex === -1 ? 'hover' : ''}`}
-                                    onClick={() => navigate("/print-preview", {state: {label: entry}})}
-                                    onMouseEnter={() => setHoverIndex(index)}
-                                    onMouseLeave={() => setHoverIndex(-1)}
-                                >
-                                    <label style={{cursor: 'pointer', flexGrow: 1}}>
-                                        <span>{entry?.name || "Error - Please Refresh Page"}</span>
-                                    </label>
-                                    <button
-                                        ref={inputRef}
-                                        className={`subButton ${editIndex === index ? 'buttonHover' : ''}`}
+                            {data
+                                .filter(entry => entry.name.toLowerCase().startsWith(input.toLowerCase()))
+                                .map((entry, index) => (
+                                    <div
+                                        key={index}
+                                        className={`option ${hoverIndex === index && editIndex === -1 && deleteIndex === -1 ? 'hover' : ''}`}
                                         onClick={(event) => {
-                                            event.stopPropagation()
-                                            navigate(`/sticker-creation`, {state: {entry}})
+                                            event.stopPropagation();
+                                            navigate("/print-preview", { state: { label: entry } });
+                                            console.log(entry?.name);
                                         }}
-                                        onMouseEnter={() => setEditIndex(index)}
-                                        onMouseLeave={() => setEditIndex(-1)}
+                                        onMouseEnter={() => setHoverIndex(index)}
+                                        onMouseLeave={() => setHoverIndex(-1)}
                                     >
-                                        Edit
-                                    </button>
-                                    <button
-                                        ref={inputRef}
-                                        className={`subButton ${deleteIndex === index ? 'buttonHover' : ''}`}
-                                        onClick={(event) => {
-                                            event.stopPropagation()
-                                            if (checkBackendStatus()) {
-                                                removeLabel(entry, setData)
-                                            }
-                                        }}
-                                        onMouseEnter={() => setDeleteIndex(index)}
-                                        onMouseLeave={() => setDeleteIndex(-1)}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            ))}
+                                        <label style={{ cursor: 'pointer', flexGrow: 1 }}>
+                                            <span>{`${entry?.name}${entry?.size && entry?.size > 0 ? ` (${entry.size} oz)` : ''}` || "Error - Please Refresh Page"}</span>
+                                        </label>
+                                        <button
+                                            className={`subButton ${editIndex === index ? 'buttonHover' : ''}`}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                navigate(`/sticker-creation`, { state: { entry } });
+                                            }}
+                                            onMouseEnter={() => setEditIndex(index)}
+                                            onMouseLeave={() => setEditIndex(-1)}
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            className={`subButton ${deleteIndex === index ? 'buttonHover' : ''}`}
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                if (checkBackendStatus()) {
+                                                    removeLabel(entry, setData);
+                                                }
+                                            }}
+                                            onMouseEnter={() => setDeleteIndex(index)}
+                                            onMouseLeave={() => setDeleteIndex(-1)}
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                ))}
                         </div>
                     )}
                 </div>

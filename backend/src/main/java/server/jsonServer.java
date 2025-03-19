@@ -1,6 +1,8 @@
 package server;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import spark.Spark;
+
 import java.util.List;
 import static spark.Spark.*;
 
@@ -17,6 +19,22 @@ public class jsonServer {
             catch (Exception e) {
                 return "Error accessing main page.";
             }
+        });
+
+        get("/close-backend", (request, response) -> {
+            Spark.stop();
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(5000);
+                    System.exit(0);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+
+            return "Backend closing down.";
         });
 
         get("/get-labels", (request, response) -> {
