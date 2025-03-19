@@ -4,7 +4,7 @@ import './stickerLayout.css';
 import React, {useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import LabelPreview from "./LabelPreview";
-import {addLabel, checkBackendStatus, editLabel} from "../ManageLabels";
+import {addLabel, checkBackendStatus, editLabel, closeBackend} from "../ManageLabels";
 
 function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     const location = useLocation();
@@ -238,62 +238,6 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                                 ))}
                             </div>
                         </div>
-
-                        <div className='inputContainer' style={{display: 'flex', alignItems: 'center'}}>
-                            <h3>Store/Print</h3>
-                            <h3 style={{color: 'red'}}>*</h3>
-                            <h3>: </h3>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
-                                <label style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    fontSize: '1.15rem',
-                                    gap: '0.25rem'
-                                }}>
-                                    <input
-                                        type="checkbox"
-                                        className='checkbox'
-                                        checked={label.printOption}
-                                        onChange={() => handleOptionChange(true, -1)}
-                                    />
-                                    Show Print Preview Page
-                                </label>
-                            </div>
-                        </div>
-
-                        {!label.printOption && (
-                            <div className='inputContainer'>
-                                <h3>Number of Pages to Print</h3>
-                                <h3 style={{color: 'red'}}>*</h3>
-                                <h3>: </h3>
-                                <button
-                                    className='dateButton'
-                                    style={{backgroundColor: minusHover ? 'darkgrey' : 'lightgray'}}
-                                    onClick={() => {
-                                        setLabel((prevLabel) => ({
-                                            ...prevLabel,
-                                            numPages: prevLabel.numPages > 1 ? prevLabel.numPages - 1 : 1
-                                        }));
-                                    }}
-                                    onMouseEnter={() => setMinusHover(true)}
-                                    onMouseLeave={() => setMinusHover(false)}
-                                >
-                                    -
-                                </button>
-                                <h3 style={{fontSize: '1.4rem'}}> {label.numPages} </h3>
-                                <button
-                                    className='dateButton'
-                                    style={{backgroundColor: plusHover ? 'darkgrey' : 'lightgray'}}
-                                    onClick={() => {
-                                        setLabel((prevLabel) => ({...prevLabel, numPages: prevLabel.numPages + 1}));
-                                    }}
-                                    onMouseEnter={() => setPlusHover(true)}
-                                    onMouseLeave={() => setPlusHover(false)}
-                                >
-                                    +
-                                </button>
-                            </div>
-                        )}
                     </div>
 
                     <LabelPreview label={label} border={true}/>
