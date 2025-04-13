@@ -1,39 +1,62 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
+const remoteMain = require('@electron/remote/main');
 
-require('@electron/remote/main').initialize();
+remoteMain.initialize();
 
 let backendProcess;
 
+let win;
+
 function createWindow() {
     // Create the browser window.
-    const win = new BrowserWindow({
+    win = new BrowserWindow({
         width: 800,
         height: 600,
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true
-        }
+        },
     });
 
-    //win.webContents.openDevTools();
-
-    const jarPath = path.join(__dirname, '../../target/stickerPrinterBackend-1.0-SNAPSHOT.jar');
-
-    // Using spawn instead of exec for better control over the process
-    backendProcess = spawn('java', ['-jar', jarPath]);
-
-    const handleBackendData = (data) => {
-        console.log(`Backend: ${data}`);
-        win.loadURL('http://localhost:3000');
-    };
-
-    backendProcess.stdout.on('data', handleBackendData);
-    backendProcess.stderr.on('data', handleBackendData);
+    remoteMain.enable(win.webContents);
 }
 
-app.on('ready', createWindow);
+function runBackend() {
+    const jarPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'backend/stickerPrinterBackend.jar')
+        : path.join(__dirname, '../../target/stickerPrinterBackend-1.0-SNAPSHOT.jar');
+
+    try {
+        backendProcess = spawn('java', ['-jar', jarPath]);
+
+        backendProcess.stdout.on('data', runFrontend);
+        backendProcess.stderr.on('data', runFrontend);
+    }
+    catch (e) {
+        console.error("MAIN.JS - runBackend: Error in running backend:", jarPath, err)
+    }
+}
+
+function runFrontend() {
+    const startUrl = app.isPackaged
+        ? `file://${path.join(__dirname, '../build/index.html')}`
+        : 'http://localhost:3000';
+
+    win.loadURL(startUrl).catch((err) => {
+        console.error('MAIN.JS - runFrontend: Failed to load URL:', startUrl, err);
+    });
+}
+
+app.whenReady().then(() => {
+    createWindow();
+    if (!app.isPackaged) {
+        win.webContents.openDevTools();
+    }
+
+    runBackend();
+});
 
 app.on('before-quit', () => {
     if (backendProcess) {
