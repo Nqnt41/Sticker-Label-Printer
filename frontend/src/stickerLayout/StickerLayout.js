@@ -119,9 +119,6 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [hoverIndex, setHoverIndex] = useState(-1);
 
-    const [plusHover, setPlusHover] = useState(false);
-    const [minusHover, setMinusHover] = useState(false);
-
     const logo = require(`../images/logo.jpg`);
 
     if (!backendRunning) {
