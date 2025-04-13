@@ -31,6 +31,20 @@ This project combines both a ReactJS frontend, allowing for easy access to infor
 
 A software application version of this project is in active development using the Electron framework.
 
+### Images
+
+An example of how the main menu will look upon being loaded with only one entry present.
+
+![The main menu's appearance with only one entry](https://github.com/Nqnt41/Sticker-Label-Printer/blob/main/README%20Images/J%2BK%20Image%201.JPG)
+
+The page to add new labels - the editing labels page is a variation of this design, though with differing button options at the bottom of the screen.
+
+![The appearance for the edit label page](https://github.com/Nqnt41/Sticker-Label-Printer/blob/main/README%20Images/J%2BK%20Image%202.JPG)
+
+The preview for printing out a sticker label sheet.
+
+![A preview for how a printer sticker sheet will look](https://github.com/Nqnt41/Sticker-Label-Printer/blob/main/README%20Images/J%2BK%20Image%203.JPG)
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ## Built With
