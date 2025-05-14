@@ -1,19 +1,10 @@
 [ {
-  "name" : "cj",
-  "size" : 0,
-  "ingredients" : "",
+  "name" : "test",
+  "size" : 16,
+  "ingredients" : "ingredients, wowie!",
   "mark" : null,
   "expiration" : "",
-  "options" : [ true, true, true ],
-  "additionDate" : "3/16/2025",
-  "inclusions" : null
-}, {
-  "name" : "d",
-  "size" : 0,
-  "ingredients" : "",
-  "mark" : null,
-  "expiration" : "",
-  "options" : [ true, true, true ],
-  "additionDate" : "3/16/2025",
+  "options" : [ false, true, true ],
+  "additionDate" : "5/11/2025",
   "inclusions" : null
 } ]

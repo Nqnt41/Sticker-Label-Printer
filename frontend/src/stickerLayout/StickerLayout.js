@@ -1,10 +1,10 @@
 import '../App.css';
 import './stickerLayout.css';
+import LabelPreview from "../labelPreview/LabelPreview";
 
 import React, {useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import LabelPreview from "./LabelPreview";
-import {addLabel, checkBackendStatus, editLabel, closeBackend} from "../ManageLabels";
+import {addLabel, checkBackendStatus, editLabel} from "../ManageLabels";
 
 function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     const location = useLocation();
@@ -111,7 +111,7 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
 
     const sizes = [0, 8, 16]; // possible sizes
     const days = ['N/A', 'SU', 'M', 'T', 'W', 'TH', 'F', 'S']; // possible dates
-    const values = ['Kimmy\'s', 'Address', 'Phone Number']; // features
+    const values = ['Kimmy\'s or Joey\'s?', 'Address', 'Phone Number']; // features
 
     const [sizeIndex, setSizeIndex] = useState(0);
     const [sizeHoverIndex, setSizeHoverIndex] = useState(-1)
@@ -142,7 +142,8 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                         <div className='inputContainer'>
                             <h3>Name</h3>
                             <h3 style={{color: 'red'}}>*</h3>
-                            <h3>: Kimmy's </h3>
+                            <h3>: </h3>
+                            {label.options[0] ? (<h3 style={{ textAlign: "left", width: "75px" }}>Kimmy's </h3>) : (<h3 style={{ textAlign: "left", width: "75px" }}>Joey's </h3>)}
                             <input
                                 style={{fontSize: '1rem'}}
                                 name='name'
