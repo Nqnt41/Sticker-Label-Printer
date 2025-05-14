@@ -54,14 +54,27 @@
     background-color: #137885;
 }
 
-.jsonSelection {
+.settingsContainer {
     position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 1000;
+}
+
+.settingsButton {
+    position: relative;
+    z-index: 10;
+}
+
+.settingsMenu {
+    position: absolute;
+    top: 76%;
     right: 0;
-    bottom: 0;
-    margin-right: 1.5rem;
-    margin-bottom: 1.5rem;
+    margin-top: 0.5rem;
+    z-index: 9;
     padding: 0.25rem 0.5rem;
     color: black;
-    background-color: #bbbbbb;
-    border: solid black 0.2rem;
+    background-color: lightgrey;
+    border: solid black thin;
+    min-width: 22rem;
 }

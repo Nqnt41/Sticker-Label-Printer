@@ -1,6 +1,7 @@
 import '../App.css';
 import './stickerLayout.css';
 import LabelPreview from "../labelPreview/LabelPreview";
+import {SettingsMenu} from '../homePage/SettingsMenu';
 
 import React, {useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -119,6 +120,19 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [hoverIndex, setHoverIndex] = useState(-1);
 
+    const [openSettings, setOpenSettings] = useState(false);
+    const [settingsHover, setSettingsHover] = useState(false);
+
+    const [useJSON, setUseJSON] = useState(true);
+    const [useNewFormat, setUseNewFormat] = useState(() => {
+        const stored = localStorage.getItem('useNewFormat');
+        return stored !== null ? JSON.parse(stored) : true;
+    });
+
+    useEffect(() => {
+        localStorage.setItem('useNewFormat', JSON.stringify(useNewFormat));
+    }, [useNewFormat]);
+
     const logo = require(`../images/logo.jpg`);
 
     if (!backendRunning) {
@@ -128,6 +142,20 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
         return (
             <div className="App">
                 <img className="logo" onClick={() => navigate('/')} src={logo} alt={''}/>
+
+                <div className='settingsContainer'>
+                    <button
+                        className={`settingsButton bold ${settingsHover ? 'altHover' : ''} ${openSettings ? 'select' : ''}`}
+                        style={{marginRight: '0.25rem'}}
+                        onMouseEnter={() => setSettingsHover(true)}
+                        onMouseLeave={() => setSettingsHover(false)}
+                        onClick={() => setOpenSettings((prev) => !prev)}
+                    >
+                        Settings
+                    </button>
+                    {openSettings && <SettingsMenu setUseJSON={setUseJSON} useJSON={useJSON} setUseNewFormat={setUseNewFormat} useNewFormat={useNewFormat}/>}
+                </div>
+
                 <h1>Edit Sticker Layout</h1>
                 <h2 style={{marginBottom: 0}}>Add any information needed for stickers. Use preview to see layout.</h2>
 
