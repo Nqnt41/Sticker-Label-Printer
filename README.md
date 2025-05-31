@@ -25,9 +25,9 @@ This project was developed for use by the staff at Joey's Seafood Shack in Vero 
 
 For take-out meals at this restaurant, specific sticker labels are used in order to mark the containers, showing customers what food is in the container, its portions, the restaurant name and address, and more.
 
-In order to streamline the process of preparing, saving, and printing these labels, I developed this full-stack software application that allows users to access the list of existing stickers, stored on a JSON file, alter that information, and print out any necessary labels.
+In order to streamline the process of preparing, saving, and printing these labels, I developed this full-stack software application that allows users to access the list of existing stickers, stored on both a JSON file and MySQL database, alter that information, and print out any necessary labels.
 
-This project combines both a ReactJS frontend, allowing for easy access to information, with a Java backend used primarily to edit the JSON file. Java Spark is used to connect these two aspects of the application.
+This project combines both a ReactJS frontend, allowing for easy access to information, with a Java backend used to edit the JSON file/MySQL database. Java Spark is used to connect these two aspects of the application.
 
 A software application version of this project is in active development using the Electron framework.
 
