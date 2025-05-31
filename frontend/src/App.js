@@ -10,13 +10,40 @@ import { ShowLabels } from "./showLabels/ShowLabels";
 function App() {
     const [data, setData] = useState([]);
     const [backendRunning, setBackendRunning] = useState(false);
+    const [sqlInfo, setSQLInfo] = useState(() => {
+        try {
+            const stored = localStorage.getItem('sqlInfo');
+            console.log("STORED " + stored);
+            return stored ? JSON.parse(stored) : {
+                sqlActive: false,
+                url: "",
+                table: "",
+                user: "",
+                password: "",
+            };
+        }
+        catch (e) {
+            console.warn("Could not parse localStorage sqlInfo:", e);
+            return {
+                sqlActive: false,
+                url: "",
+                table: "",
+                user: "",
+                password: "",
+            };
+        }
+    });
 
     return (
         <Router basename="/">
             <PageTracker/>
             <Routes>
-                <Route path="/" element={<HomePage setData={setData} data={data} setBackendRunning={setBackendRunning} backendRunning={backendRunning} />} />
-                <Route path="/sticker-creation" element={<StickerLayout setData={setData} setBackendRunning={setBackendRunning} backendRunning={backendRunning} />} />
+                <Route path="/" element={<HomePage setData={setData} data={data}
+                                                   setBackendRunning={setBackendRunning} backendRunning={backendRunning}
+                                                   setSQLInfo={setSQLInfo} sqlInfo={sqlInfo} />} />
+                <Route path="/sticker-creation" element={<StickerLayout setData={setData}
+                                                                        setBackendRunning={setBackendRunning} backendRunning={backendRunning}
+                                                                        setSQLInfo={setSQLInfo} sqlInfo={sqlInfo} />} />
                 <Route path="/print-preview" element={<PrintPreview />} />
                 <Route path="/show-labels" element={<ShowLabels setData={setData} data={data}/>} />
             </Routes>

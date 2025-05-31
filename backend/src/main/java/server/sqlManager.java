@@ -10,14 +10,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class sqlManager {
-    private static String URL = "";
-    private static String USER = "";
-    private static String PASSWORD = "";
-    private static String TABLE = "";
-
     private static Connection connection = null;
 
-    public static Connection establishConnection(String port, String dbName, String table, String user, String password) throws SQLException {
+    public static String TABLE = "";
+
+    public static Connection establishConnection(SQLConnection conn) throws SQLException {
         if (connection != null && !connection.isClosed()) {
             return connection;
         }
@@ -25,29 +22,23 @@ public class sqlManager {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            String url = "jdbc:mysql://" + port + "/" + dbName;
+            String url = "jdbc:mysql://" + conn.getHostname() + ":" + conn.getPort() + "/" + conn.getDbName();
 
-            boolean matchFound = false;
-            if (Objects.equals(URL, "")) {
-                System.out.println("Attempting to connect to database with the following information...");
-                System.out.println("URL: " + url + ", Username: " + user + ", Password: " + password);
-                connection = DriverManager.getConnection(url, user, password);
-            }
-            else {
-                System.out.println("Attempting to connect to database with the following (saved) information...");
-                System.out.println("URL: " + URL + ", Username: " + USER + ", Password: " + PASSWORD);
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                matchFound = true;
-            }
+            System.out.println("Attempting to connect to database with the following information...");
+            System.out.println("URL: " + url + ", Username: " + conn.getUser() + ", Password: " + conn.getPassword());
+            connection = DriverManager.getConnection(url, conn.getUser(), conn.getPassword());
+
             System.out.println("Database connection established successfully.");
 
             Statement statement = connection.createStatement();
 
-            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS StickerPrinter");
+            statement.executeUpdate("CREATE DATABASE IF NOT EXISTS " + conn.getDbName());
             System.out.println("Database created successfully, if did not already exist.");
 
-            PreparedStatement preparedStatement = connection.prepareStatement(
-                "CREATE TABLE" + table + "(" +
+            Statement tableStatement = connection.createStatement();
+
+            tableStatement.executeUpdate(
+                "CREATE TABLE IF NOT EXISTS " + conn.getTable() + " (" +
                 "id INT AUTO_INCREMENT PRIMARY KEY," +
                 "name VARCHAR(50) NOT NULL," +
                 "size INT," +
@@ -60,15 +51,11 @@ public class sqlManager {
                 "additionDate DATE" +
                 ");"
             );
-            preparedStatement.setString(1, table);
             System.out.println("Created table for sticker labels if did not already exist.");
 
-            if (!matchFound) {
-                URL = url;
-                USER = user;
-                PASSWORD = password;
-                TABLE = table;
-            }
+            System.out.println("Connection object returned: " + connection);
+
+            TABLE = conn.getTable();
 
             return connection;
         }
@@ -85,37 +72,65 @@ public class sqlManager {
     }
 
     private static void prepareStatement(Label data, PreparedStatement statement) throws SQLException, ParseException {
-        statement.setString(1, data.getName());
-        statement.setInt(2, data.getSize());
-        statement.setString(3, data.getIngredients());
-        statement.setString(4, data.getMark());
+        try {
+            statement.setString(1, data.getName());
+            statement.setInt(2, data.getSize());
+            statement.setString(3, data.getIngredients());
+            statement.setString(4, data.getMark());
 
-        SimpleDateFormat formatter = new SimpleDateFormat("M/d/yyyy");
-        java.util.Date utilDate = formatter.parse(data.getExpiration());
-        Date formattedDate = new Date(utilDate.getTime());
-        statement.setDate(5, formattedDate);
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
 
-        statement.setBoolean(6, data.getOptions()[0]);
-        statement.setBoolean(7, data.getOptions()[1]);
-        statement.setBoolean(8, data.getOptions()[2]);
+            if (data.getExpiration() != null && !data.getExpiration().isEmpty()) {
+                try {
+                    java.util.Date utilDate = formatter.parse(data.getExpiration());
+                    Date formattedDate = new Date(utilDate.getTime());
+                    statement.setDate(5, formattedDate);
+                } catch (ParseException e) {
+                    statement.setNull(5, java.sql.Types.DATE);
+                }
+            } else {
+                statement.setNull(5, java.sql.Types.DATE);
+            }
 
-        java.util.Date utilAdditionDate = formatter.parse(data.getAdditionDate());
-        Date formattedAdditionDate = new Date(utilAdditionDate.getTime());
-        statement.setDate(9, formattedAdditionDate);
+            statement.setBoolean(6, data.getOptions()[0]);
+            statement.setBoolean(7, data.getOptions()[1]);
+            statement.setBoolean(8, data.getOptions()[2]);
+
+            if (data.getAdditionDate() != null && !data.getAdditionDate().isEmpty()) {
+                try {
+                    java.util.Date utilAdditionDate = formatter.parse(data.getAdditionDate());
+                    Date formattedAdditionDate = new Date(utilAdditionDate.getTime());
+                    statement.setDate(9, formattedAdditionDate);
+                } catch (ParseException e) {
+                    statement.setNull(9, java.sql.Types.DATE);
+                }
+            }
+            else {
+                statement.setNull(9, java.sql.Types.DATE);
+            }
+
+            System.out.println("PrepareStatement succeeded.");
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.err.println("PrepareStatement: error preparing statement");
+        }
     }
 
-    public static void addDB(Label data) throws SQLException {
+    public static void addDB(Label label) throws SQLException {
         if (connection == null || connection.isClosed()) {
             System.err.println("addDB - No connection to server!");
             return;
         }
 
         try {
+            System.out.println("addDB" + TABLE);
+
             PreparedStatement statement = connection.prepareStatement(
-                "INSERT INTO ? ( name, size, ingredients, mark, expiration, useKimmys, useAddress, useNumber, additionDate ) " +
+                "INSERT INTO " + TABLE + " ( name, size, ingredients, mark, expiration, useKimmys, useAddress, useNumber, additionDate ) " +
                 "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );"
             );
-            prepareStatement(data, statement);
+            prepareStatement(label, statement);
 
             int rowsAffected = statement.executeUpdate();
             System.out.println("addDB - Rows affected: " + rowsAffected);
@@ -125,26 +140,50 @@ public class sqlManager {
         }
     }
 
-    public static void setDB(int idNum, Label data) throws SQLException {
+    public static void removeLabelSQL(String name, int size) throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            System.err.println("removeLabelSQL - No connection to server!");
+            return;
+        }
+
+        try {
+            PreparedStatement statement = connection.prepareStatement(
+                    "DELETE FROM " + TABLE + " WHERE name = ? AND size = ?;"
+            );
+            statement.setString(1, name);
+            statement.setInt(2, size);
+
+            int rowsAffected = statement.executeUpdate();
+            System.out.println("removeLabelSQL - Rows affected: " + rowsAffected);
+        }
+        catch (Exception e) {
+            throw new RuntimeException("removeLabelSQL - An error occurred removing from database", e);
+        }
+    }
+
+    public static void editLabelSQL(Label originalLabel, Label newLabel) throws SQLException {
         if (connection == null || connection.isClosed()) {
             System.err.println("setDB - No connection to server!");
             return;
         }
 
         try {
+            System.out.println("labels: " + originalLabel + " - " + newLabel);
+
             PreparedStatement statement = connection.prepareStatement(
-                "UPDATE ?" +
-                "SET (name = ?, size = ?, ingredients = ?, mark = ?, expiration = ?, useKimmys = ?, useAddress = ?, useNumber = ?, additionDate = ?)" +
-                "WHERE id = ?;"
+                    "UPDATE " + TABLE +
+                        " SET name = ?, size = ?, ingredients = ?, mark = ?, expiration = ?, useKimmys = ?, useAddress = ?, useNumber = ?, additionDate = ? " +
+                        "WHERE name = ? AND size = ?;"
             );
-            prepareStatement(data, statement);
-            statement.setInt(11, idNum);
+            prepareStatement(newLabel, statement);
+            statement.setString(10, originalLabel.getName());
+            statement.setInt(11, originalLabel.getSize());
 
             int rowsAffected = statement.executeUpdate();
-            System.out.println("setDB - Rows affected: " + rowsAffected);
+            System.out.println("editLabelSQL - Rows affected: " + rowsAffected);
         }
         catch (Exception e) {
-            throw new RuntimeException("setDB - An error occurred adding to database", e);
+            throw new RuntimeException("editLabelSQL - An error occurred editing database", e);
         }
     }
 
@@ -156,7 +195,7 @@ public class sqlManager {
 
         try {
             PreparedStatement statement = connection.prepareStatement(
-                    "DELETE FROM " + TABLE
+                    "DELETE FROM " + TABLE + ";"
             );
 
             int rowsAffected = statement.executeUpdate();
@@ -174,7 +213,7 @@ public class sqlManager {
 
         List<Label> data = new ArrayList<>();
         try (Statement statement = connection.createStatement();
-            ResultSet result = statement.executeQuery("SELECT * FROM " + TABLE)) {
+            ResultSet result = statement.executeQuery("SELECT * FROM " + TABLE + ";")) {
 
             while (result.next()) {
                 java.sql.Date expirationDate = result.getDate("expiration");
@@ -184,11 +223,22 @@ public class sqlManager {
                 String additionString = additionDate != null ? additionDate.toLocalDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")) : "";
 
                 boolean[] options = {result.getBoolean("useKimmys"), result.getBoolean("useAddress"), result.getBoolean("useNumber")};
-                String[] placeholder = {};
 
                 Label label = new Label(result.getString("name"), result.getInt("size"),
                     result.getString("ingredients"), result.getString("mark"), expirationString,
-                    options, additionString, placeholder);
+                    options, additionString);
+
+                System.out.println("Label: " + label.getName() + " " + label.getSize() + " " + label.getIngredients()
+                        + " " + label.getMark() + " " + label.getExpiration() + " ");
+                /*
+                    this.name = name;
+                    this.size = size;
+                    this.ingredients = ingredients;
+                    this.mark = mark;
+                    this.expiration = expiration;
+                    this.options = options;
+                    this.additionDate = additionDate;
+                 */
 
                 data.add(label);
             }
@@ -197,10 +247,15 @@ public class sqlManager {
             throw new RuntimeException("fetchDataDB - Failed to convert DB data", e);
         }
 
+        System.out.println("GET: ");
+        for (int i = 0; i < data.size(); i++) {
+            System.out.println(i + " " + data.get(i).getName());
+        }
+
         return data;
     }
 
-    public static void syncJsonAndSQL (List<Label> labels) throws SQLException {
+    public static void syncJSONAndSQL (List<Label> labels) throws SQLException {
         if (connection == null || connection.isClosed()) {
             System.err.println("setDB - No connection to server!");
             return;
@@ -213,7 +268,7 @@ public class sqlManager {
             for (int i = 0; i < labels.size(); i++) {
                 PreparedStatement statement = connection.prepareStatement(
                         "INSERT INTO" + TABLE + "( name, size, ingredients, mark, expiration, useKimmys, useAddress, useNumber, additionDate ) " +
-                                "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );"
+                            "VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? );"
                 );
                 prepareStatement(labels.get(i), statement);
 
@@ -224,5 +279,10 @@ public class sqlManager {
         } catch (Exception e) {
             throw new RuntimeException("syncJsonAndSQL - An error occurred removing from database", e);
         }
+    }
+
+    public static class EditLabelContainer {
+        public Label originalLabel;
+        public Label newLabel;
     }
 }

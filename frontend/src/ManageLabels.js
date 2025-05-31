@@ -1,5 +1,3 @@
-import { isEqual } from "lodash";
-
 export async function getLabels() {
     console.log("GET");
 
@@ -22,19 +20,19 @@ export function addLabel(label, setData) {
         return;
     }
 
-    const { name, size, ingredients, mark, options, expiration, inclusions } = label;
+    const { name, size, ingredients, mark, options, expiration } = label;
 
     console.log("TEST " + size);
 
     const date = new Date();
     const additionDate = date.toLocaleDateString();
 
-    console.log({ name, size, ingredients, mark, options, expiration, additionDate, inclusions });
+    console.log({ name, size, ingredients, mark, options, expiration, additionDate });
 
     fetch("http://localhost:4567/add-label", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, size, ingredients, mark, options, expiration, additionDate, inclusions })
+        body: JSON.stringify({ name, size, ingredients, mark, options, expiration, additionDate })
     })
         .then(response => response.text())
         .then(data => {
