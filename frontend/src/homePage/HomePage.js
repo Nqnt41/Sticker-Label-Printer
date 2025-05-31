@@ -3,29 +3,39 @@ import {useNavigate} from 'react-router-dom';
 
 import {getLabels, removeLabel, checkBackendStatus} from "../ManageLabels";
 import {SettingsMenu} from "./SettingsMenu"
+import {getLabelsSQL, removeLabelSQL} from "../ManageLabelsSQL";
 
 import './homePage.css';
 import '../App.css';
 
-function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
+function HomePage( {setData, data, setBackendRunning, backendRunning, setSQLInfo, sqlInfo} ) {
     const navigate = useNavigate();
     const inputRef = useRef(null);
 
     const [input, setInput] = useState('');
+
     const [hover, setHover] = useState(false);
     const [showLabelsHover, setShowLabelsHover] = useState(false);
     const [hoverIndex, setHoverIndex] = useState(-1);
+
     const [editIndex, setEditIndex] = useState(-1);
     const [deleteIndex, setDeleteIndex] = useState(-1);
+
     const [loading, setLoading] = useState(true);
     const [searchSelected, setSearchSelected] = useState(false);
-    const [useJSON, setUseJSON] = useState(true);
+
+    const [useJSON, setUseJSON] = useState(() => {
+        const stored = localStorage.getItem('useJSON');
+        return stored !== null ? JSON.parse(stored) : true;
+    });
     const [useNewFormat, setUseNewFormat] = useState(() => {
         const stored = localStorage.getItem('useNewFormat');
         return stored !== null ? JSON.parse(stored) : true;
     });
     const [openSettings, setOpenSettings] = useState(false);
     const [settingsHover, setSettingsHover] = useState(false);
+
+    const [dbSynced, setDBSynced] = useState(true);
 
     const logo = require(`../images/logo.jpg`);
 
@@ -48,8 +58,18 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
             try {
                 setLoading(true);
                 await checkBackendStatus();
-                const labels = await getLabels();
+
+                let labels;
+                if (!sqlInfo.sqlActive || useJSON) {
+                    labels = await getLabels();
+                    console.log("JSON ", labels)
+                }
+                else {
+                    labels = await getLabelsSQL();
+                    console.log("SQL ", labels)
+                }
                 setData(labels || []);
+
                 setLoading(false);
             } catch (e) {
                 console.error("fetchData - backend not working or online!", e);
@@ -64,7 +84,7 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
         else {
             setLoading(true);
         }
-    }, [backendRunning, setData]);
+    }, [backendRunning, useJSON, setData]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -106,7 +126,11 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
                     >
                         Settings
                     </button>
-                    {openSettings && <SettingsMenu setUseJSON={setUseJSON} useJSON={useJSON} setUseNewFormat={setUseNewFormat} useNewFormat={useNewFormat}/>}
+                        {openSettings &&
+                        <SettingsMenu setUseJSON={setUseJSON} useJSON={useJSON} setUseNewFormat={setUseNewFormat}
+                                      useNewFormat={useNewFormat} setSQLInfo={setSQLInfo} sqlInfo={sqlInfo}
+                                      settingsChangeable={true} setDBSynced={setDBSynced} dbSynced={dbSynced}/>
+                        }
                 </div>
 
                 <h1>Sticker Sheet Printer</h1>
@@ -156,7 +180,12 @@ function HomePage( {setData, data, setBackendRunning, backendRunning} ) {
                                             onClick={(event) => {
                                                 event.stopPropagation();
                                                 if (checkBackendStatus()) {
-                                                    removeLabel(entry, setData);
+                                                    if (!sqlInfo.sqlActive || useJSON) {
+                                                        removeLabel(entry, setData);
+                                                    }
+                                                    else {
+                                                        removeLabelSQL(entry, setData);
+                                                    }
                                                 }
                                             }}
                                             onMouseEnter={() => setDeleteIndex(index)}

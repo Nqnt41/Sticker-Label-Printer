@@ -1,6 +1,7 @@
 package server;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Label {
@@ -11,8 +12,8 @@ public class Label {
     private String expiration;
     private boolean[] options;
     private String additionDate;
-    private String[] inclusions;
 
+    @JsonIgnoreProperties(ignoreUnknown = true)
     @JsonCreator
     public Label(
             @JsonProperty("name") String name,
@@ -21,8 +22,8 @@ public class Label {
             @JsonProperty("mark") String mark,
             @JsonProperty("expiration") String expiration,
             @JsonProperty("options") boolean[] options,
-            @JsonProperty("additionDate") String additionDate,
-            @JsonProperty("inclusions") String[] inclusions) {
+            @JsonProperty("additionDate") String additionDate
+        ) {
         this.name = name;
         this.size = size;
         this.ingredients = ingredients;
@@ -30,7 +31,6 @@ public class Label {
         this.expiration = expiration;
         this.options = options;
         this.additionDate = additionDate;
-        this.inclusions = inclusions; // TODO: inclusions is a holdover, remove it from server.Label down the line. now options.
     }
 
     // Getters
@@ -62,10 +62,6 @@ public class Label {
         return additionDate;
     }
 
-    public String[] getInclusions() {
-        return inclusions;
-    }
-
     // Setters
     public void setName(String name) {
         this.name = name;
@@ -93,9 +89,5 @@ public class Label {
 
     public void setAdditionDate(String additionDate) {
         this.additionDate = additionDate;
-    }
-
-    public void setInclusions(String[] inclusions) {
-        this.inclusions = inclusions;
     }
 }

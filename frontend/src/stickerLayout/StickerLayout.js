@@ -1,13 +1,16 @@
 import '../App.css';
 import './stickerLayout.css';
+import '../homePage/homePage.css';
+
 import LabelPreview from "../labelPreview/LabelPreview";
 import {SettingsMenu} from '../homePage/SettingsMenu';
 
 import React, {useEffect, useState} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {addLabel, checkBackendStatus, editLabel} from "../ManageLabels";
+import {addLabelSQL, editLabelSQL} from "../ManageLabelsSQL";
 
-function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
+function StickerLayout( {setData, setBackendRunning, backendRunning, setSQLInfo, sqlInfo} ) {
     const location = useLocation();
     const labelToEdit = location.state?.entry ?? null;
     const originalLabel = labelToEdit ? JSON.parse(JSON.stringify(labelToEdit)) : null;
@@ -47,11 +50,9 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                 name: '',
                 size: 0,
                 ingredients: '',
-                dateMark: '',
+                mark: '',
                 expiration: '',
                 options: [true, true, true],
-                printOption: true,
-                numPages: -1
             };
         }
     });
@@ -66,7 +67,7 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                 [name]: trueDate,
             }));
         }
-        else if (name === 'size' || name === 'numPages') {
+        else if (name === 'size') {
             setLabel((prevLabel) => ({
                 ...prevLabel,
                 [name]: parseInt(value, 10) || 0,
@@ -81,37 +82,20 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     };
 
     const handleOptionChange = (printing, index) => {
-        if (!printing) {
-            setLabel((prevLabel) => ({
-                ...prevLabel,
-                options: prevLabel.options.map((option, i) =>
-                    i === index ? !option : option // Toggle the value at the specific index
-                ),
-            }));
-        }
-        else {
-            setLabel((prevLabel) => ({
-                ...prevLabel,
-                printOption: !prevLabel.printOption,
-            }));
-        }
+        setLabel((prevLabel) => ({
+            ...prevLabel,
+            options: prevLabel.options.map((option, i) =>
+                i === index ? !option : option // Toggle the value at the specific index
+            ),
+        }));
     };
 
     useEffect(() => {
         localStorage.setItem('label', JSON.stringify(label));
     }, [label]);
 
-    useEffect(() => {
-        if (label.printOption) {
-            setLabel((prevLabel) => ({ ...prevLabel, numPages: -1 }));
-        }
-        else if (label.numPages === -1) {
-            setLabel((prevLabel) => ({ ...prevLabel, numPages: 1 }));
-        }
-    }, [label.printOption, label.numPages]);
-
     const sizes = [0, 8, 16]; // possible sizes
-    const days = ['N/A', 'SU', 'M', 'T', 'W', 'TH', 'F', 'S']; // possible dates
+    const days = ['N/A', 'Today\'s Date', 'SU', 'M', 'T', 'W', 'TH', 'F', 'S']; // possible dates
     const values = ['Kimmy\'s or Joey\'s?', 'Address', 'Phone Number']; // features
 
     const [sizeIndex, setSizeIndex] = useState(0);
@@ -123,7 +107,10 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
     const [openSettings, setOpenSettings] = useState(false);
     const [settingsHover, setSettingsHover] = useState(false);
 
-    const [useJSON, setUseJSON] = useState(true);
+    const [useJSON, setUseJSON] = useState(() => {
+        const stored = localStorage.getItem('useJSON');
+        return stored !== null ? JSON.parse(stored) : true;
+    });
     const [useNewFormat, setUseNewFormat] = useState(() => {
         const stored = localStorage.getItem('useNewFormat');
         return stored !== null ? JSON.parse(stored) : true;
@@ -153,7 +140,7 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                     >
                         Settings
                     </button>
-                    {openSettings && <SettingsMenu setUseJSON={setUseJSON} useJSON={useJSON} setUseNewFormat={setUseNewFormat} useNewFormat={useNewFormat}/>}
+                    {openSettings  && <SettingsMenu setUseJSON={setUseJSON} useJSON={useJSON} setUseNewFormat={setUseNewFormat} useNewFormat={useNewFormat} setSQLInfo={setSQLInfo} sqlInfo={sqlInfo} settingsChangeable={false}/>}
                 </div>
 
                 <h1>Edit Sticker Layout</h1>
@@ -220,8 +207,8 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                                         className='dateButton'
                                         style={{backgroundColor: selectedIndex === index || hoverIndex === index ? 'darkgrey' : 'lightgray'}}
                                         onClick={() => {
-                                            setLabel((prevLabel) => ({...prevLabel, dateMark: days[index]}));
-                                            setSelectedIndex(index); // Update selectedIndex for active button styling
+                                            setLabel((prevLabel) => ({...prevLabel, mark: days[index]}));
+                                            setSelectedIndex(index);
                                         }}
                                         onMouseEnter={() => setHoverIndex(index)}
                                         onMouseLeave={() => setHoverIndex(-1)}
@@ -271,8 +258,13 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                 {labelToEdit === null && (
                     <div>
                         <button className="printButton" onClick={async () => {
-                            if (checkBackendStatus()) {
-                                await addLabel(label, setData);
+                            if (await checkBackendStatus()) {
+                                if (!sqlInfo.sqlActive || useJSON) {
+                                    await addLabel(label, setData);
+                                }
+                                else {
+                                    await addLabelSQL(label, setData);
+                                }
                             }
                             navigate("/");
                         }}>
@@ -284,8 +276,13 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                             Only Print Sticker Sheet
                         </button>
                         <button className="printButton" onClick={async () => {
-                            if (checkBackendStatus()) {
-                                await addLabel(label, setData);
+                            if (await checkBackendStatus()) {
+                                if (!sqlInfo.sqlActive || useJSON) {
+                                    await addLabel(label, setData);
+                                }
+                                else {
+                                    await addLabelSQL(label, setData);
+                                }
                             }
                             navigate("/print-preview", {state: {label}});
                         }}>
@@ -296,8 +293,13 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                 {labelToEdit !== null && (
                     <div>
                         <button className="printButton" onClick={async () => {
-                            if (checkBackendStatus()) {
-                                await editLabel(originalLabel, label, setData);
+                            if (await checkBackendStatus()) {
+                                if (!sqlInfo.sqlActive || useJSON) {
+                                    await editLabel(originalLabel, label, setData);
+                                }
+                                else {
+                                    await editLabelSQL(originalLabel, label, setData);
+                                }
                             }
                             navigate("/");
                         }}>
@@ -309,8 +311,13 @@ function StickerLayout( {setData, setBackendRunning, backendRunning} ) {
                             Only Print Sticker Sheet
                         </button>
                         <button className="printButton" onClick={async () => {
-                            if (checkBackendStatus()) {
-                                await editLabel(originalLabel, label, setData);
+                            if (await checkBackendStatus()) {
+                                if (!sqlInfo.sqlActive || useJSON) {
+                                    await editLabel(originalLabel, label, setData);
+                                }
+                                else {
+                                    await editLabelSQL(originalLabel, label, setData);
+                                }
                             }
                             navigate("/print-preview", {state: {label}});
                         }}>

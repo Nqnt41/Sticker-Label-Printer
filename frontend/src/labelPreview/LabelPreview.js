@@ -5,6 +5,13 @@ import './labelPreviewLandscape.css';
 
 import {useNavigate} from "react-router-dom";
 
+function findDate() {
+    const dateMarks = ["SU", "M", "T", "W", "TH", "F", "S"];
+    const todayDate = new Date();
+
+    return dateMarks[todayDate.getDay()];
+}
+
 export function LabelPreview({ label, border }) {
     const navigate = useNavigate();
 
@@ -34,8 +41,9 @@ export function LabelPreview({ label, border }) {
                 {label.options[1] && (
                     <h2 className='display address'>{address}</h2>
                 )}
-                {label.dateMark !== 'N/A' && (
-                    <h3 className='dateMark'>{label.dateMark}</h3>
+                {label.mark !== 'N/A' && (
+                    <h3 className='dateMark'>
+                        {label.mark === 'Today\'s Date' ? findDate() : label.mark}</h3>
                 )}
                 {label.options[2] && (
                     <h2 className='number'>{number}</h2>

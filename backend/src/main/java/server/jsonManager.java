@@ -59,7 +59,7 @@ public class jsonManager {
             List<Label> labels = new ArrayList<>();
 
             if (jsonFile.exists() && jsonFile.length() > 0) {
-                labels = objectMapper.readValue(jsonFile, new TypeReference<List<Label>>() {});
+                labels = objectMapper.readValue(jsonFile, new TypeReference<>() {});
             }
 
             labels.add(data);
@@ -102,7 +102,7 @@ public class jsonManager {
             ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();
-            return objectMapper.readValue(jsonFile, new TypeReference<List<Label>>(){});
+            return objectMapper.readValue(jsonFile, new TypeReference<>() {});
         }
         catch (Exception e) {
             System.out.println("FetchData - An error occurred converting data from .json file into object.");
