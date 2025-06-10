@@ -23,6 +23,8 @@
 
 This project was developed for use by the staff at Joey's Seafood Shack in Vero Beach, Florida. This restaurant specializes in both seafood and Italian cuisine, doing both sit-in and take-out dining.
 
+The current release build can be found and downloaded [in the Releases tab.](https://github.com/Nqnt41/Sticker-Label-Printer/releases/tag/early-release-build)
+
 For take-out meals at this restaurant, specific sticker labels are used in order to mark the containers, showing customers what food is in the container, its portions, the restaurant name and address, and more.
 
 In order to streamline the process of preparing, saving, and printing these labels, I developed this full-stack software application that allows users to access the list of existing stickers, stored on both a JSON file and MySQL database, alter that information, and print out any necessary labels.
