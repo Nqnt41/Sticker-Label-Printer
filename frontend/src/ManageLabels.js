@@ -22,8 +22,6 @@ export function addLabel(label, setData) {
 
     const { name, size, ingredients, mark, options, expiration } = label;
 
-    console.log("TEST " + size);
-
     const date = new Date();
     const additionDate = date.toLocaleDateString();
 
@@ -78,7 +76,8 @@ export async function checkBackendStatus() {
     try {
         await fetch('http://localhost:4567', { mode: 'no-cors' });
         return true;
-    } catch (error) {
+    }
+    catch (error) {
         return false;
     }
 }

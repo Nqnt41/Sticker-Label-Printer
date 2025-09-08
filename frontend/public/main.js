@@ -2,6 +2,8 @@ const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
 const remoteMain = require('@electron/remote/main');
+const http = require('http');
+const fs = require('fs');
 
 remoteMain.initialize();
 
@@ -14,6 +16,7 @@ function createWindow() {
     win = new BrowserWindow({
         width: 1250,
         height: 750,
+        icon: path.join(__dirname, '../src/images/logo.png'),
         webPreferences: {
             nodeIntegration: true,
             enableRemoteModule: true
@@ -23,18 +26,62 @@ function createWindow() {
     remoteMain.enable(win.webContents);
 }
 
+function waitForBackend() {
+    return new Promise ((resolve, reject) => {
+        const start = Date.now();
+
+        const check = () => {
+            http.get("http://localhost:4567/", res => {
+                if (res.statusCode === 200) {
+                    resolve();
+                }
+                else {
+                    retry();
+                }
+            }).on('error', retry);
+        };
+
+        const retry = () => {
+            if (Date.now() - start > 10000) {
+                reject(new Error('Backend did not start within 10000ms'));
+            }
+            else {
+                setTimeout(check, 1000);
+            }
+        }
+
+        check();
+    });
+}
+
 function runBackend() {
-    const jarPath = app.isPackaged
-        ? path.join(process.resourcesPath, 'backend/stickerPrinterBackend.jar')
-        : path.join(__dirname, '../../target/stickerPrinterBackend-1.0-SNAPSHOT.jar');
+    let jarPath;
 
     try {
+        if (app.isPackaged && fs.existsSync(path.join(process.resourcesPath, 'Backend.jar'))) {
+            jarPath = path.join(process.resourcesPath, 'Backend.jar');
+        }
+        else {
+            jarPath = app.isPackaged
+                ? path.join(process.resourcesPath, 'backend/Backend.jar')
+                : path.join(__dirname, '../../target/stickerPrinterBackend-1.0-SNAPSHOT.jar');
+        }
+
         backendProcess = spawn('java', ['-jar', jarPath]);
 
-        backendProcess.stdout.on('data', runFrontend);
-        backendProcess.stderr.on('data', runFrontend);
+        if (app.isPackaged) {
+            waitForBackend()
+                .then(runFrontend)
+                .catch(err => {
+                    console.error("Backend failed to start: ", err);
+                })
+        }
+        else {
+            backendProcess.stdout.on('data', runFrontend);
+            backendProcess.stderr.on('data', runFrontend);
+        }
     }
-    catch (e) {
+    catch (err) {
         console.error("MAIN.JS - runBackend: Error in running backend:", jarPath, err)
     }
 }
@@ -90,8 +137,8 @@ async function closeBackend() {
 
         return "Program Closed";
     }
-    catch (error) {
-        console.error("closeBackend - Backend did not exit properly:", error);
-        throw error;
+    catch (err) {
+        console.error("closeBackend - Backend did not exit properly:", err);
+        throw err;
     }
 }

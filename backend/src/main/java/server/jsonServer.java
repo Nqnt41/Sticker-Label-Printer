@@ -3,6 +3,7 @@ package server;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import spark.Spark;
 
+import java.io.File;
 import java.sql.Connection;
 import java.util.List;
 import static spark.Spark.*;
@@ -16,6 +17,10 @@ public class jsonServer {
         // BOTH
         get("/", (request, response) -> {
             try {
+                File jsonFile = new File("labels.json");
+
+                jsonManager.ensureValidFile(jsonFile, "labels.json");
+
                 return "Backend is running - try accessing /get-labels for json information.";
             }
             catch (Exception e) {

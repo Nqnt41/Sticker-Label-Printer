@@ -14,6 +14,7 @@ public class jsonManager {
     public static void createFile(String fileName) {
         try {
             File jsonFile = new File(fileName);
+
             if (jsonFile.createNewFile()) {
                 System.out.println("File created - " + jsonFile.getName());
                 FileWriter writer = new FileWriter(jsonFile);
@@ -33,10 +34,10 @@ public class jsonManager {
 
     public static void ensureValidFile(File jsonFile, String fileName) {
         try {
-            if (!jsonFile.exists()) {
-                createFile(fileName);
-            }
+            createFile(fileName);
             if (jsonFile.length() == 0) {
+                System.out.println("LENGTH == 0, RESETTING");
+
                 FileWriter writer = new FileWriter(jsonFile);
                 writer.write("[]");
                 writer.close();
@@ -53,6 +54,7 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
+            System.out.println("ADD - ");
             ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -80,6 +82,7 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
+            System.out.println("SET:");
             ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();
@@ -99,6 +102,7 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
+            System.out.println("FETCHDATA:");
             ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();

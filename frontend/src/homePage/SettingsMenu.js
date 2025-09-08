@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import Popup from 'reactjs-popup';
 import YouTube from "react-youtube";
 import {establishConnectionSQL} from "../ManageLabelsSQL";
+import ReactPlayer from 'react-player';
 
 export function SettingsMenu( {setUseJSON, useJSON, setUseNewFormat, useNewFormat, setSQLInfo, sqlInfo, settingsChangeable, dbSynced, setDBSynced} ) {
     const [hover1, setHover1] = useState(false);
@@ -131,7 +132,7 @@ function SQLSetupMenu ( {setSQLInfo, showPopup, setShowPopup, setUseJSON, useJSO
     async function attemptConnection() {
         let connectionFound = await establishConnectionSQL(hostname, port, dbName, tableName, username, password)
 
-        console.log("CONNECTIONFOUND " + connectionFound);
+        console.log("CONNECTION FOUND " + connectionFound);
 
         if (connectionFound) {
             const info = {
@@ -176,7 +177,7 @@ function SQLSetupMenu ( {setSQLInfo, showPopup, setShowPopup, setUseJSON, useJSO
                         <h3>Downloading MySQL:</h3>
                         <div>The following YouTube tutorial can be used to help you download MySQL, if it is not already installed. Please follow this tutorial to completion, and keep MySQL Workbench open once its done.</div>
                         <div style={{fontWeight: 'bold', marginBottom: '0.5rem'}}>When setting up your server connection via the MySQL Workbench, please note the Hostname, Port, Username, and Password used to create the server.</div>
-                        <MovieClip/>
+                        <ReactPlayer src='https://www.youtube.com/watch?v=u96rVINbAUI' style={{display: 'flex', width: '518px', height: '315px'}} controls={true}/>
                     </li>
 
                     <li>
@@ -276,7 +277,7 @@ function SQLSetupMenu ( {setSQLInfo, showPopup, setShowPopup, setUseJSON, useJSO
 }
 
 
-class MovieClip extends React.Component {
+{/*class MovieClip extends React.Component {
     render() {
         const options = {
             height: '315',
@@ -293,4 +294,4 @@ class MovieClip extends React.Component {
     _onReady(event) {
         event.target.pauseVideo();
     }
-}
+}*/}
