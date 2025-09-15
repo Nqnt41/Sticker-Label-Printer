@@ -74,8 +74,23 @@ function SelectDatabaseType ( {setUseJSON, useJSON, setSQLInfo, sqlInfo, showPop
                 <button
                     onClick={() => {
                         if (sqlInfo.sqlActive) {
-                            setUseJSON(false);
-                            localStorage.setItem('useJSON', JSON.stringify(false));
+                            const url = sqlInfo.url;
+                            const colonIndex = url.indexOf(':', 14);
+                            const slashIndex = url.indexOf('/', 15);
+
+                            console.log("Parsing connection: Prefix is " + url.substring(0, 13) + ", Hostname is " + url.substring(13, colonIndex) + ", Port is " + url.substring(colonIndex + 1, slashIndex) + ", Database Name is " + url.substring(slashIndex + 1, url.length));
+
+                            const connectionFound = establishConnectionSQL(url.substring(13, colonIndex), url.substring(colonIndex + 1, slashIndex), url.substring(slashIndex + 1, url.length), sqlInfo.table, sqlInfo.user, sqlInfo.password);
+                            // establishConnectionSQL(hostname, port, dbName, table, user, password)
+
+                            if (connectionFound) {
+                                setUseJSON(false);
+                                localStorage.setItem('useJSON', JSON.stringify(false));
+                            }
+                            else {
+                                setShowPopup(true);
+                                alert("ERROR - Unable to load MySQL database. Please re-input information!");
+                            }
                         }
                         else {
                             setShowPopup(true);

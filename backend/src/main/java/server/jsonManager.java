@@ -21,9 +21,6 @@ public class jsonManager {
                 writer.write("[]");
                 writer.close();
             }
-            else {
-                System.out.println("File already exists!");
-            }
         }
         catch (IOException e) {
             System.out.println("createFile - An error occurred creating .json file.");
@@ -34,13 +31,8 @@ public class jsonManager {
 
     public static void ensureValidFile(File jsonFile, String fileName) {
         try {
-            createFile(fileName);
-            if (jsonFile.length() == 0) {
-                System.out.println("LENGTH == 0, RESETTING");
-
-                FileWriter writer = new FileWriter(jsonFile);
-                writer.write("[]");
-                writer.close();
+            if (!jsonFile.exists()) {
+                createFile(fileName);
             }
         }
         catch (Exception e) {
@@ -102,7 +94,6 @@ public class jsonManager {
         try {
             File jsonFile = new File(fileName);
 
-            System.out.println("FETCHDATA:");
             ensureValidFile(jsonFile, fileName);
 
             ObjectMapper objectMapper = new ObjectMapper();

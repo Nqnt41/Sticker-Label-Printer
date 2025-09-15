@@ -68,6 +68,9 @@ function HomePage( {setData, data, setBackendRunning, backendRunning, setSQLInfo
                     labels = await getLabelsSQL();
                     console.log("SQL ", labels)
                 }
+
+                labels.sort((a, b) => a.name.localeCompare(b.name));
+
                 setData(labels || []);
 
                 setLoading(false);
@@ -148,7 +151,7 @@ function HomePage( {setData, data, setBackendRunning, backendRunning, setSQLInfo
                     {searchSelected && Array.isArray(data) && data.length > 0 && (
                         <div className="optionsContainer">
                             {data
-                                .filter(entry => entry.name.toLowerCase().startsWith(input.toLowerCase()))
+                                .filter(entry => entry?.name?.toLowerCase()?.startsWith(input.toLowerCase()))
                                 .map((entry, index) => (
                                     <div
                                         key={index}

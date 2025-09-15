@@ -253,7 +253,7 @@ function StickerLayout( {setData, setBackendRunning, backendRunning, setSQLInfo,
                         </div>
                     </div>
 
-                    <LabelPreview label={label} border={true}/>
+                    <LabelPreview label={label} border={true} allowNavigate={false}/>
                 </div>
                 {labelToEdit === null && (
                     <div>

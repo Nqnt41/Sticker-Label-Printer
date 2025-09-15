@@ -24,7 +24,7 @@ export function ShowLabels( {setData, data} ) {
 
             <div className="displayGrid">
                 {data.map((label, index) => (
-                    <LabelPreview key={index} label={label} border={true}/>
+                    <LabelPreview key={index} label={label} border={true} allowNavigate={true}/>
                 ))}
             </div>
 

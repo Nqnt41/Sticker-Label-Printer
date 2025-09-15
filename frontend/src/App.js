@@ -14,6 +14,15 @@ function App() {
         try {
             const stored = localStorage.getItem('sqlInfo');
             console.log("STORED " + stored);
+
+            /* if (stored) {
+                const urlA = JSON.parse(stored).url;
+                const colonIndex = urlA.indexOf(':', 14);
+                const slashIndex = urlA.indexOf('/', 15);
+
+                console.log(urlA.substring(0, 13) + " " + urlA.substring(13, colonIndex) + " " + urlA.substring(colonIndex + 1, slashIndex) + " " + urlA.substring(slashIndex + 1, urlA.length ));
+            }*/
+
             return stored ? JSON.parse(stored) : {
                 sqlActive: false,
                 url: "",
