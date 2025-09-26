@@ -25,7 +25,7 @@ export function addLabel(label, setData) {
     const date = new Date();
     const additionDate = date.toLocaleDateString();
 
-    console.log({ name, size, ingredients, mark, options, expiration, additionDate });
+    const newLabel = {name, size, ingredients, mark, expiration, options}
 
     fetch("http://localhost:4567/add-label", {
         method: "POST",
@@ -34,14 +34,29 @@ export function addLabel(label, setData) {
     })
         .then(response => response.text())
         .then(data => {
-            setData(prevData => [...prevData, data])
-            console.log(data);
+            console.log("new data:", data);
+            setData(prevData => [...prevData, newLabel].sort((a, b) => a.name.localeCompare(b.name)));
+            console.log("data: " + data);
         })
         .catch(error => console.error("Error adding label:", error));
 }
 
 export function removeLabel(label, setData) {
-    console.log("REMOVE");
+    console.log("REMOVE", label);
+
+    function checkOptions (a, b) {
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        for (let i = 0; i < a.length; i++) {
+            if (a !== b) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     const name = label.name;
     const size = parseInt(label.size);
@@ -51,7 +66,9 @@ export function removeLabel(label, setData) {
     })
         .then(response => response.text())
         .then(data => {
-            setData(prevData => prevData.filter(entry => entry.name !== label.name || entry.size !== label.size));
+            setData(prevData => prevData.filter(entry => {
+                return !dataConditions(entry, label);
+            }));
             console.log(data)
         })
         .catch(error => console.error("Error deleting label:", error));
@@ -66,10 +83,30 @@ export function editLabel(originalLabel, newLabel, setData) {
         body: JSON.stringify({ originalLabel, newLabel })
     })
         .then(response => response.json())
-        .then(newEntry => {
-            setData(prevData => prevData.map(entry => (entry.name === originalLabel.name && entry.size === originalLabel.size) ? newEntry : entry));
+        .then(() => {
+            setData(prevData => prevData.map(entry => (dataConditions(entry, originalLabel)) ? newLabel : entry));
         })
         .catch(error => console.error("Error editing label:", error));
+}
+
+function dataConditions(entry, label) {
+    function checkOptions (a, b) {
+        if (a.length !== b.length) {
+            return false;
+        }
+
+        for (let i = 0; i < a.length; i++) {
+            if (a !== b) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    return (entry.name === label.name && entry.size === label.size && entry.ingredients === label.ingredients &&
+        entry.mark === label.mark && entry.expiration === label.expiration && entry.additionDate === label.additionDate &&
+        checkOptions(entry.options, label.options));
 }
 
 export async function checkBackendStatus() {

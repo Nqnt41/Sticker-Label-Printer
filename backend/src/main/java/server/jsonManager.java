@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class jsonManager {
+    // java -jar target/stickerPrinterBackend-1.0-SNAPSHOT.jar
+
     public static void createFile(String fileName) {
         try {
             File jsonFile = new File(fileName);

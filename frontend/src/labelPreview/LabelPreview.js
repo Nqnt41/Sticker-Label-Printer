@@ -25,6 +25,7 @@ export function LabelPreview({ label, border, allowNavigate }) {
     return (
         <div
             className={`${useNewFormat ? 'lsLabelContainer' : 'labelContainer'} ${border ? '' : 'borderless'} ${allowNavigate ? 'pointer' : ''}`}
+            aria-label="printOnClick"
             onClick={() => {
                 if (allowNavigate) {
                     navigate("/print-preview", {state: {label: label}});

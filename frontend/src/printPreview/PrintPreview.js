@@ -33,7 +33,7 @@ export function PrintPreview() {
 
     return (
         <span>
-            <div ref={contentRef} className="printerPageSize">
+            <div ref={contentRef} className={`${useNewFormat ? 'lsPrinterPageSize' : 'printerPageSize'}`}>
                 <div className={`${useNewFormat ? 'lsLabelGrid' : 'labelGrid'}`}>
                     {Array.from({length: useNewFormat ? 16 : 15}).map((_, index) => (
                         <LabelPreview key={index} label={label} border={false} allowNavigate={false}/> // TODO: change formats based on useNewFormat
